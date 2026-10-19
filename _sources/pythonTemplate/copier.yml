@@ -76,3 +76,6 @@ packageName:
   type: str
   default: "{{ projectName | lower }}"
   when: false
+
+---
+!include template/_meta/license-questions.yml

@@ -16,11 +16,12 @@ uvx --from 'copier==9.17.2' copier copy --defaults --vcs-ref=<reviewed-sha> git@
 cd notes-cli
 uv lock
 make check build verify
-uv venv /tmp/notes-cli-install
-uv pip install --python /tmp/notes-cli-install/bin/python dist/*.whl
-cd /tmp
-/tmp/notes-cli-install/bin/notesCli --help
-/tmp/notes-cli-install/bin/python -m notescli --version
+install_dir=$(mktemp -d)
+uv venv "$install_dir"
+uv pip install --python "$install_dir/bin/python" dist/*.whl
+cd "$install_dir"
+"$install_dir/bin/notesCli" --help
+"$install_dir/bin/python" -m notescli --version
 ```
 
 The main checks, package build and installed-wheel tests use the shared Docker
@@ -74,3 +75,9 @@ owns engineering choices; this repository owns only the CLI specialization.
 This source repository is private. No license or public release has been selected.
 The maintained commands and test fixtures are available to authorized readers;
 publication and redistribution terms require a separate owner decision.
+
+## 📄 License
+
+Original additions use [MIT](LICENSE); inherited source and dependencies retain
+their [notices](THIRD_PARTY_NOTICES.md). Generated projects choose `licensePolicy`
+and their own holder/year through the common Python foundation.

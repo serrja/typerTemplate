@@ -1,5 +1,9 @@
 # typerTemplate
 
+Read [baseRules at the selected commit](https://raw.githubusercontent.com/serrja/baseRules/730418d3cc480b4f05b88b4c8275296c4845a75a/docs/engineering.md) before the local contracts below. Pinned links are reading sources, not automatic
+loaders or grants. Review source diff and change full-SHA links explicitly, then run
+documentation checks. Local overrides cover only this repository's specialization.
+
 This repository owns the Typer CLI specialization of pythonTemplate. Read
 composition.toml and provenance before editing. Python follows PEP 8. Edit
 overlay/ for CLI wiring, settings and CliRunner examples. Refresh pinned parent

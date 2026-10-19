@@ -10,7 +10,9 @@ version = "0.1.0"
 description = "{{ projectDescription | default(projectName ~ ' ' ~ profile ~ ' foundation') }}"
 readme = "README.md"
 requires-python = ">={{ pythonMinimum | default('3.12') }}"
-dependencies = [{% block runtimeDependencies %}{% if profile == 'service' %}"fastapi>=0.119,<1", "uvicorn>=0.38,<1", "pydantic-settings>=2.12,<3"{% if withPersistence | default(false) %}, "sqlalchemy[asyncio]>=2.0.44,<3", "asyncpg>=0.31,<1", "alembic>=1.17,<2"{% endif %}{% endif %}{% endblock %}]
+{% block licenseMetadata %}{% if licensePolicy | default('unlicensed') == 'MIT' %}license = "MIT"
+{% endif %}license-files = ["LICENSES/*", "THIRD_PARTY_NOTICES.md"{% if licensePolicy | default('unlicensed') == 'MIT' %}, "LICENSE"{% endif %}]
+{% endblock %}dependencies = [{% block runtimeDependencies %}{% if profile == 'service' %}"fastapi>=0.119,<1", "uvicorn>=0.38,<1", "pydantic-settings>=2.12,<3"{% if withPersistence | default(false) %}, "sqlalchemy[asyncio]>=2.0.44,<3", "asyncpg>=0.31,<1", "alembic>=1.17,<2"{% endif %}{% endif %}{% endblock %}]
 {% endblock %}
 {% block scripts %}{% endblock %}
 {% block development %}[dependency-groups]

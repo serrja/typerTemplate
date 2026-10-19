@@ -1,0 +1,28 @@
+# Shared native Copier questions; inherited by specializations through composition.
+_skip_if_exists:
+  - LICENSE
+  - THIRD_PARTY_NOTICES.md
+_exclude:
+  - _meta
+  - _meta/**
+  - "{% if licensePolicy | default('unlicensed') != 'MIT' %}LICENSE{% endif %}"
+licensePolicy:
+  type: str
+  choices: [unlicensed, MIT]
+  default: unlicensed
+  help: "Choose deliberately before redistribution; unlicensed grants no project license."
+licenseHolder:
+  type: str
+  default: ""
+  when: "{{ licensePolicy == 'MIT' }}"
+  help: "Your project's actual copyright holder, not the template author."
+  validator: >-
+    {%- if licensePolicy == 'MIT' and (not licenseHolder.strip() or '\n' in licenseHolder or '\r' in licenseHolder) -%}
+    Provide a nonempty single-line copyright holder.
+    {%- endif -%}
+licenseYear:
+  type: int
+  default: 2026
+  when: "{{ licensePolicy == 'MIT' }}"
+  help: "Confirm the year for your project's copyright notice."
+  validator: "{% if licensePolicy == 'MIT' and (licenseYear < 1970 or licenseYear > 9999) %}Provide a four-digit year.{% endif %}"

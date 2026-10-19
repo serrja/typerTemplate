@@ -41,3 +41,6 @@ withCi:
   type: bool
   default: true
   validator: "{% if withCi and not withTesting %}CI requires withTesting=true.{% endif %}"
+
+---
+!include template/_meta/license-questions.yml
