@@ -15,7 +15,7 @@
     ".github/workflows/release.yml.jinja": "197d73a00aae0753dc4df62399819b4a98eec209af5029c1e78b28bfe4af8532",
     ".gitignore": "732f5ce68b4b13ef900931ca4a47ef00acffa7cdb7b699feb0e8a8d7ac719d82",
     ".pre-commit-config.yaml": "ce876c91a3925b76317a9875c15d344f78e3be9936662ac8b0c64f224f6f98da",
-    ".template-source.json": "110004e2ca9caf65f2e6bf67a23c61a4e45d51900aefb9e2f45dfba20f7049d9",
+    ".template-source.json": "0a01a36db7e48b87c04ab38135e15555bc8d634330d85233d7f57ddede7553c6",
     "AGENTS.md.jinja": "88180e189e4151d9764228f6e039cb916a1b46ee543ff3511372ed1cc19bb865",
     "CONTRIBUTING.md.jinja": "5ae3b7d2871613bf4dc676c32a76de330774f7a0014d19964d1bcb56c8844f7f",
     "Dockerfile.quality": "d7c50a1fff554d6eb9e8d13837725ce038dd596c5374c006d1fff2c6bd3b8df3",
@@ -34,10 +34,10 @@
     "src/{{ packageName }}/__main__.py.jinja": "741949e2a9cf78ac1e36673ca380ee68ab300a1c570194aaa6f20f9a37e2f970",
     "src/{{ packageName }}/cli.py.jinja": "62536faeac3d589d331705ba3f0ae31eafdbd50b484ea43e53db84d4da8d0fcf",
     "src/{{ packageName }}/settings.py.jinja": "eb895eab11bdd3874377536419926e104b0c5dc20e6bcc4b6731f032c4114a6c",
-    "tests/foundation/test_cli.py.jinja": "6c2a62058b27856513f5cb0fd6a0c9416e40cba354ceaa4cf9087741f73ff24a",
+    "tests/foundation/test_cli.py.jinja": "02da619fb194b6812a2bee5e82b3ddaf5ba0e42e1753224efc880e9abc1e022f",
     "tests/foundation/test_package.py.jinja": "0deb617f92fd0d99648913a29b23d536893153076350ba862f562864549b7dd0"
   },
-  "overlayContentSha256": "955d9f104006ab26f9cb459e9c7db623752078bc8d065fa824e7abf16e2bdfb6",
+  "overlayContentSha256": "aba3c435eb1c86fbc5519d3c448fcef28edcef67812a430916b390cadb9d1449",
   "owners": {
     ".copier-answers.yml.jinja": "parent",
     ".dockerignore": "parent",
@@ -75,6 +75,6 @@
   },
   "parentContentSha256": "2ca05cb4762db30d38fd6ce80d55d3cb2430a332a568041bb96ed3528cf09451",
   "schema": 1,
-  "sourceContentSha256": "d732a9857995633240d8d23e0eb6c1122359be7ab678ee11ea880f1c5a37f734",
+  "sourceContentSha256": "656b6e45023b8adefa898adff7675f3f883941d603857ea7db2d167454967e3f",
   "templateVersion": "0.1.0.dev0"
 }
