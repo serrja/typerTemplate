@@ -24,6 +24,8 @@ app = typer.Typer(
 
 IGNORED_PARTS = {
     ".git",
+    ".vscode",
+    ".serena",
     ".venv",
     "__pycache__",
     ".mypy_cache",

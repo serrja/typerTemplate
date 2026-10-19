@@ -1,6 +1,6 @@
 {
   "repository": "https://github.com/serrja/pythonTemplate",
-  "revision": "a20cdefac2c0ea5ba0b8ef9332dc495d932b599e",
+  "revision": "7853b1df0e267b06978ca03e3eda30ce0e8db754",
   "files": {
     ".github/PULL_REQUEST_TEMPLATE.md": {
       "source": "template/.github/PULL_REQUEST_TEMPLATE.md.jinja",
@@ -24,7 +24,7 @@
     },
     "docker/coverage_report.py": {
       "source": "template/docker/coverage_report.py",
-      "sha256": "87c19af8b26f2134fb3ac06a8ea9325f22998cef28b15a37b9a2debf1ac00300"
+      "sha256": "75c5b398842ae3199da118ef5c15ce9616c3b6de921de98056bdcb1744e4c85e"
     },
     ".github/workflows/contribution.yml": {
       "source": "template/.github/workflows/contribution.yml",
@@ -52,7 +52,7 @@
     },
     "tests/test_maintenance_cli.py": {
       "source": "tests/test_maintenance_cli.py",
-      "sha256": "f23bf869449e2eb00113d555047ed8403764163bc0057185b2716946bd603deb"
+      "sha256": "b6f6f90483d772c108804d31a55675a6f81d4ac1eccb03bf8c50c1b3c2a9b67d"
     }
   },
   "rules": {

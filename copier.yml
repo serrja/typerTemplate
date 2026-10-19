@@ -8,6 +8,10 @@ _skip_if_exists:
   - PROJECT.md
   - "src/*/settings.py"
 _exclude:
+  - .vscode
+  - .vscode/**
+  - .serena
+  - .serena/**
   - "_base"
   - "_base/**"
   - "{% if not withCi %}.github/workflows/**{% endif %}"

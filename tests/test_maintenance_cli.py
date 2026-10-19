@@ -1,10 +1,35 @@
 """Keep existing maintenance arguments and exit/status streams under Typer."""
 
+import subprocess
+import sys
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from tools import check_documentation, compose_template
+
+
+@pytest.mark.parametrize("width", [88, 99, 100])
+def test_portable_reporter_has_one_native_format_across_consumers(width: int) -> None:
+    source = Path(__file__).resolve().parents[1] / "template/docker/coverage_report.py"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "ruff",
+            "format",
+            "--check",
+            "--line-length",
+            str(width),
+            str(source),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 def test_compose_help_and_invalid_option_do_not_write(tmp_path: Path) -> None:

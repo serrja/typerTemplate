@@ -100,7 +100,8 @@ def report(path: Path, report_format: str, output: Path, after: Path | None) -> 
 def main(
     path: Annotated[Path, typer.Argument()],
     report_format: Annotated[
-        ReportFormat, typer.Option("--format")
+        ReportFormat,
+        typer.Option("--format"),
     ] = ReportFormat.COVERAGE_PY,
     output: Annotated[Path, typer.Option("--output")] = Path("coverage/summary.md"),
     after: Annotated[Path | None, typer.Option("--after")] = None,

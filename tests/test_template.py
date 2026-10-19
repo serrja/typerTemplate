@@ -114,6 +114,11 @@ def _source(tmp_path: Path) -> tuple[Path, str]:
     shutil.copy2(ROOT / "copier.yml", source / "copier.yml")
     shutil.copytree(ROOT / "template", source / "template")
     _git(source, "init", "--quiet")
+    for directory in [".vscode", ".serena"]:
+        marker = source / "template" / directory / "synthetic.txt"
+        marker.parent.mkdir()
+        marker.write_text("synthetic editor state")
+        _git(source, "add", "--force", str(marker.relative_to(source)))
     return source, _commit(source, "base template")
 
 
@@ -143,6 +148,8 @@ def test_render_profiles(tmp_path: Path, profile: str, persistence: bool) -> Non
     )
     package = output / "src/sampleproject"
     assert package.is_dir()
+    assert not (output / ".vscode").exists()
+    assert not (output / ".serena").exists()
     assert (package / "__init__.py").is_file()
     assert "N" in (output / "pyproject.toml").read_text()
     assert (package / "app.py").exists() is (profile == "service")
@@ -204,6 +211,8 @@ def test_update_preserves_owner_files_and_detects_overlap(tmp_path: Path) -> Non
     second = _commit(source, "update managed README")
     _run(*COPIER, "update", "--quiet", "--defaults", f"--vcs-ref={second}", cwd=output)
     assert "Owner note is retained." in owner.read_text()
+    assert not (output / ".vscode").exists()
+    assert not (output / ".serena").exists()
     assert "Updated source marker." in (output / "README.md").read_text()
     assert (
         _run("make", "--no-print-directory", "owner-check", cwd=output)

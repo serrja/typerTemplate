@@ -144,7 +144,10 @@ def test_source_error_and_cancellation_are_safe(
 
     monkeypatch.setattr(cli, "load_settings", fail)
     result = CliRunner().invoke(app, ["config", "show"], input="")
-    assert result.exit_code == (2 if isinstance(failure, SettingsError) else 1)
+    assert result.exit_code == (2 if isinstance(failure, SettingsError) else 130)
     assert not result.stdout
     assert "SYNTHETIC_PRIVATE_INPUT" not in result.output
-    assert result.stderr
+    if isinstance(failure, SettingsError):
+        assert result.stderr == "Invalid or unavailable configuration.\n"
+    else:
+        assert not result.stderr

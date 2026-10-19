@@ -73,6 +73,8 @@ def test_source_filter_and_identity(tmp_path: Path) -> None:
         composer.source_files(tmp_path / "missing")
     first = write(tmp_path / "nested/input.txt", "one")
     write(tmp_path / ".git/private", "ignored")
+    write(tmp_path / ".vscode/settings.json", "ignored")
+    write(tmp_path / ".serena/project.yml", "ignored")
     write(tmp_path / "__pycache__/input.pyc", "ignored")
     write(tmp_path / "input.pyc", "ignored")
     files = composer.source_files(tmp_path)
