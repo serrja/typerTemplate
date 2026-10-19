@@ -1,0 +1,22 @@
+name: Validate Actions
+description: Verify workflows with checksum-pinned upstream actionlint.
+inputs:
+  directory:
+    description: Repository directory whose workflows are validated.
+    required: false
+    default: .
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      working-directory: ${{ inputs.directory }}
+      run: |
+        set -euo pipefail
+        tool_dir="$RUNNER_TEMP/actionlint-1.7.12"
+        mkdir -p "$tool_dir"
+        curl --fail --silent --show-error --location \
+          'https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz' \
+          --output "$tool_dir/archive.tar.gz"
+        printf '%s  %s\n' '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8' "$tool_dir/archive.tar.gz" | sha256sum --check
+        tar --extract --gzip --file "$tool_dir/archive.tar.gz" --directory "$tool_dir" actionlint
+        "$tool_dir/actionlint" .github/workflows/*.yml

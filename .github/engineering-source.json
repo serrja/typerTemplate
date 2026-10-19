@@ -1,0 +1,67 @@
+{
+  "repository": "https://github.com/serrja/pythonTemplate",
+  "revision": "9f7571758351b81e7d11818d6ccbad878ab063aa",
+  "files": {
+    ".github/PULL_REQUEST_TEMPLATE.md": {
+      "source": "template/.github/PULL_REQUEST_TEMPLATE.md.jinja",
+      "sha256": "ace4038d79b02d6aacf779739ae7c9bd7179fbf9e57d5e2d1d14e08466858544"
+    },
+    ".github/ISSUE_TEMPLATE/bug.yml": {
+      "source": "template/.github/ISSUE_TEMPLATE/bug.yml",
+      "sha256": "78feef33d31062d539661a94b267c683934e5c497cda7ee075c2f2f00a49a4b6"
+    },
+    ".github/ISSUE_TEMPLATE/feature.yml": {
+      "source": "template/.github/ISSUE_TEMPLATE/feature.yml",
+      "sha256": "0b80a1e2b30ffc501f321a38b0c60396f309eb73e8aeff0c3a45710009dd23bd"
+    },
+    "docker/quality.mk": {
+      "source": "template/docker/quality.mk",
+      "sha256": "881cd3677effdf37503bd4c1980c0ce11403a6306bb8cdb2974779ff601fa6a4"
+    },
+    "docker/quality-python.mk": {
+      "source": "template/docker/quality-python.mk",
+      "sha256": "65cc6b6a47ebead0dc56466f88fbc507d61556119f7c38de2ef61f6a6f449224"
+    },
+    "docker/coverage_report.py": {
+      "source": "template/docker/coverage_report.py",
+      "sha256": "87c19af8b26f2134fb3ac06a8ea9325f22998cef28b15a37b9a2debf1ac00300"
+    },
+    ".github/workflows/contribution.yml": {
+      "source": "template/.github/workflows/contribution.yml",
+      "sha256": "5ffc172c7c0881ae18e7243ee718dcc2693922f4864cafd73ab895054e30d272"
+    },
+    ".gitignore": {
+      "source": ".gitignore",
+      "sha256": "ed1241400842cd9f453aa6c92f445d1218f12502dd8804ee6abb6defa6bb2462"
+    },
+    ".dockerignore": {
+      "source": ".dockerignore",
+      "sha256": "b33c067b012b6ac670c6876493bb0ab63f68e4fb7c0722c35197e0e9161897d5"
+    },
+    "tools/check_documentation.py": {
+      "source": "tools/check_documentation.py",
+      "sha256": "d20ab03287a1bc52b3aeaac201391c51e1d237d52c3315359668dfde62dce036"
+    },
+    "tests/test_documentation.py": {
+      "source": "tests/test_documentation.py",
+      "sha256": "69f4492f72b8d2016f309f5ccead2c98e4ac7fb835fe60836cb32e4cb93f53d7"
+    },
+    "tests/test_coverage_policy.py": {
+      "source": "tests/test_coverage_policy.py",
+      "sha256": "7cfa1bb64a620d421d05439a1884d5ba59c73adf80fe21a68699651c783f89a5"
+    },
+    "tests/test_maintenance_cli.py": {
+      "source": "tests/test_maintenance_cli.py",
+      "sha256": "f23bf869449e2eb00113d555047ed8403764163bc0057185b2716946bd603deb"
+    }
+  },
+  "rules": {
+    "contributing": "https://github.com/serrja/pythonTemplate/blob/main/docs/contributing.md",
+    "naming": "https://github.com/serrja/pythonTemplate/blob/main/docs/naming.md",
+    "testing": "https://github.com/serrja/pythonTemplate/blob/main/docs/testing.md",
+    "versioning": "https://github.com/serrja/pythonTemplate/blob/main/docs/versioning.md",
+    "engineering": "https://github.com/serrja/pythonTemplate/blob/main/docs/engineering.md"
+  },
+  "codeowners": "Project-specific assignment; not inherited from the template.",
+  "role": "Reviewed base-owned engineering snapshots; CLI source belongs only to overlay/."
+}

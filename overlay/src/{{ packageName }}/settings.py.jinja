@@ -1,0 +1,33 @@
+"""Lazy application configuration; no files or settings are read at import."""
+
+from pathlib import Path
+from typing import Annotated, Any
+
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_prefix="{{ packageName | upper }}_",
+        env_file=None,
+        extra="forbid",
+        hide_input_in_errors=True,
+    )
+
+    enabled: bool = True
+    limit: Annotated[int, Field(ge=0, le=10000)] = 10
+
+
+def load_settings(
+    config: Path | None, enabled: bool | None, limit: int | None
+) -> Settings:
+    """Explicit CLI values > environment > selected dotenv file > defaults."""
+    if config is not None and not config.is_file():
+        raise OSError("Selected configuration file is unavailable")
+    overrides: dict[str, Any] = {}
+    if enabled is not None:
+        overrides["enabled"] = enabled
+    if limit is not None:
+        overrides["limit"] = limit
+    return Settings(_env_file=config, **overrides)

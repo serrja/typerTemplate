@@ -1,0 +1,39 @@
+"""Compose the generic service and own its process resources."""
+
+from __future__ import annotations
+
+import logging
+from collections.abc import AsyncIterator
+from contextlib import {% if withPersistence | default(false) %}AsyncExitStack, {% endif %}asynccontextmanager
+
+from fastapi import FastAPI
+
+from {{ packageName }}.health import router as health_router
+{% if withPersistence | default(false) %}from {{ packageName }}.persistence import create_engine
+{% endif %}from {{ packageName }}.settings import ServiceSettings
+
+
+def create_app(settings: ServiceSettings | None = None) -> FastAPI:
+    """Construct a service without opening network resources at import time."""
+
+    @asynccontextmanager
+    async def lifespan(application: FastAPI) -> AsyncIterator[None]:
+        """Release enabled resources even when startup fails."""
+        resolved_settings = settings if settings is not None else ServiceSettings()
+        logging.getLogger("{{ projectName }}").setLevel(resolved_settings.log_level)
+{% if withPersistence | default(false) %}        async with AsyncExitStack() as stack:
+            engine = create_engine(resolved_settings)
+            stack.push_async_callback(engine.dispose)
+            application.state.db_engine = engine
+            try:
+                yield
+            finally:
+                del application.state.db_engine
+{% else %}        yield
+{% endif %}
+    application = FastAPI(title="{{ projectName }}", lifespan=lifespan)
+    application.include_router(health_router)
+    return application
+
+
+app = create_app()

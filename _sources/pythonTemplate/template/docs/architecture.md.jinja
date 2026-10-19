@@ -1,0 +1,11 @@
+# {{ projectName }} architecture
+
+This starting note names the generated boundaries; replace it with the actual design when the project gains behavior.
+
+## 🧭 Components
+
+{% if profile == 'library' %}The package exposes only explicitly documented public symbols. Its users should not depend on private modules.{% elif profile == 'service' %}FastAPI composes the ASGI app, validates settings at lifespan entry, and exposes infrastructure liveness/readiness only.{% if withPersistence | default(false) %} The optional engine/session factory and Alembic environment do not create domain schema or connect during import. `DATABASE_URL` is required when this feature is enabled.{% endif %} Add API routes and integration adapters only after defining their owner and contract.{% else %}C++20 owns native behavior; pybind11 `_core` adapts it to a Python-facing package. Do not expose `_core` as the documented API.{% endif %}
+
+## 🔒 Data and operations
+
+No credentials, domain data, deployment target, or business behavior is supplied. Record concrete trust and failure boundaries in `PROJECT.md`{% if profile == 'service' %} and `SERVICE.md`{% endif %} when they exist.

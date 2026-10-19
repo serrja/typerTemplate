@@ -1,0 +1,39 @@
+_min_copier_version: "9.17.2"
+_subdirectory: template
+_templates_suffix: .jinja
+_answers_file: .copier-answers.yml
+_envops:
+  undefined: jinja2.StrictUndefined
+_skip_if_exists:
+  - PROJECT.md
+  - "src/*/settings.py"
+_exclude:
+  - "_base"
+  - "_base/**"
+  - "{% if not withCi %}.github/workflows/**{% endif %}"
+  - "{% if not withCi %}.github/actions/**{% endif %}"
+  - "{% if not withTesting %}tests/**{% endif %}"
+  - "{% if not withTesting %}.pre-commit-config.yaml{% endif %}"
+projectName:
+  type: str
+  help: Stable executable name; Python package names are lowercase.
+  validator: >-
+    {%- if not projectName or not projectName.isascii() or not projectName[0].islower() or not projectName.isalnum() -%}
+    Use ASCII letters and digits, starting with a lowercase letter.
+    {%- endif -%}
+profile:
+  type: str
+  default: cli
+  when: false
+  validator: "{% if profile != 'cli' %}Only the CLI specialization is supported.{% endif %}"
+packageName:
+  type: str
+  default: "{{ projectName | lower }}"
+  when: false
+withTesting:
+  type: bool
+  default: true
+withCi:
+  type: bool
+  default: true
+  validator: "{% if withCi and not withTesting %}CI requires withTesting=true.{% endif %}"

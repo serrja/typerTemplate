@@ -1,0 +1,48 @@
+"""Typed CLI boundary; application configuration is assembled only on demand."""
+
+from importlib.metadata import version
+from pathlib import Path
+from typing import Annotated
+
+import typer
+from pydantic import ValidationError
+
+from {{ packageName }}.settings import load_settings
+
+app = typer.Typer(
+    help="{{ projectName }} command-line interface",
+    invoke_without_command=True,
+    pretty_exceptions_show_locals=False,
+)
+config_app = typer.Typer(help="Validate and inspect selected configuration.")
+app.add_typer(config_app, name="config")
+
+
+def show_version(value: bool) -> None:
+    if value:
+        typer.echo(version("{{ packageName }}"))
+        raise typer.Exit()
+
+
+@app.callback()
+def main(
+    version_flag: Annotated[
+        bool, typer.Option("--version", callback=show_version, is_eager=True)
+    ] = False,
+) -> None:
+    """Start the CLI without loading application configuration."""
+
+
+@config_app.command(name="show")
+def show_config(
+    config: Annotated[Path | None, typer.Option("--config")] = None,
+    enabled: Annotated[bool | None, typer.Option("--enabled/--no-enabled")] = None,
+    limit: Annotated[int | None, typer.Option("--limit")] = None,
+) -> None:
+    """Read configuration without writes, connections, prompts or downloads."""
+    try:
+        settings = load_settings(config, enabled, limit)
+    except (ValidationError, OSError, UnicodeError):
+        typer.echo("Invalid or unavailable configuration.", err=True)
+        raise typer.Exit(2) from None
+    typer.echo(f"enabled={str(settings.enabled).lower()} limit={settings.limit}")

@@ -1,0 +1,6 @@
+{% extends "template/_base/Makefile.jinja" %}
+{% block extraPhony %} run{% endblock %}
+{% block runCommand %}
+run: ## Run the installed command with the locked environment.
+	$(UV) run --locked {{ projectName }}
+{% endblock %}

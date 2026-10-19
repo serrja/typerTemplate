@@ -1,0 +1,62 @@
+{% block buildSystem %}[build-system]
+{% if profile == 'native' %}requires = ["scikit-build-core>=0.11,<1", "pybind11>=3,<4"]
+build-backend = "scikit_build_core.build"
+{% else %}requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+{% endif %}{% endblock %}
+{% block project %}[project]
+name = "{{ packageName | lower }}"
+version = "0.1.0"
+description = "{{ projectDescription | default(projectName ~ ' ' ~ profile ~ ' foundation') }}"
+readme = "README.md"
+requires-python = ">={{ pythonMinimum | default('3.12') }}"
+dependencies = [{% block runtimeDependencies %}{% if profile == 'service' %}"fastapi>=0.119,<1", "uvicorn>=0.38,<1", "pydantic-settings>=2.12,<3"{% if withPersistence | default(false) %}, "sqlalchemy[asyncio]>=2.0.44,<3", "asyncpg>=0.31,<1", "alembic>=1.17,<2"{% endif %}{% endif %}{% endblock %}]
+{% endblock %}
+{% block scripts %}{% endblock %}
+{% block development %}[dependency-groups]
+dev = ["mypy>=2.3,<3", "ruff==0.16.4", "packaging>=25,<27", "typer==0.27.3"{% if profile == 'native' %}, "scikit-build-core>=0.11,<1", "pybind11>=3,<4"{% else %}, "hatchling>=1.27,<2"{% endif %}{% if withTesting | default(true) %}, "pytest>=9,<10", "pytest-cov>=7,<8"{% if profile == 'service' %}, "httpx>=0.28,<1"{% endif %}{% endif %}{% block extraDevelopmentDependencies %}{% endblock %}]
+{% endblock %}
+{% block buildTarget %}{% if profile != 'native' %}[tool.hatch.build]
+exclude = [".aws", ".aws/**", ".agents", ".agents/**", ".codex", ".codex/**", ".serena", ".serena/**", ".vscode", ".vscode/**", ".local", ".local/**", "backups", "backups/**", ".env", ".env.*", "!.env.example", "/core.[0-9]*", "/.coverage", "/.coverage.*"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/{{ packageName }}"]
+{% else %}[tool.scikit-build]
+wheel.packages = ["src/{{ packageName }}"]
+sdist.exclude = [".aws", ".aws/**", ".agents", ".agents/**", ".codex", ".codex/**", ".serena", ".serena/**", ".vscode", ".vscode/**", ".local", ".local/**", "backups", "backups/**", ".env", ".env.*", "!.env.example", "/core.[0-9]*", "/.coverage", "/.coverage.*"]
+{% endif %}{% endblock %}
+{% block quality %}[tool.ruff]
+target-version = "{{ ruffTarget | default('py312') }}"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "N", "RUF", "UP"]
+
+[tool.mypy]
+python_version = "{{ pythonMinimum | default('3.12') }}"
+strict = true
+files = ["src/{{ packageName }}"]{% if withTesting | default(true) %}
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers --strict-config --import-mode=importlib"
+markers = ["unit: isolated unit tests", "integration: external dependency tests", "contract: public contract tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["{{ packageName }}"]
+
+[tool.coverage.paths]
+source = ["src/{{ packageName }}", "*/site-packages/{{ packageName }}"]
+
+[tool.coverage.report]
+fail_under = 0
+precision = 2
+show_missing = true
+skip_covered = false
+
+[tool.coverage.json]
+output = "coverage/coverage.json"
+
+[tool.coverage.xml]
+output = "coverage/coverage.xml"
+{% endif %}{% endblock %}{% block extraConfiguration %}{% endblock %}

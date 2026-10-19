@@ -1,0 +1,96 @@
+"""Exercise retained legacy resource failures without contacting a live database."""
+
+from __future__ import annotations
+
+import asyncio
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
+import pytest
+from fastapi import Request
+from fastapi.testclient import TestClient
+from pydantic import ValidationError
+from sqlalchemy.exc import ArgumentError
+from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.sql.elements import TextClause
+
+from {{ packageName }} import health, persistence
+from {{ packageName }}.app import create_app
+from {{ packageName }}.settings import ServiceSettings
+
+
+@pytest.fixture(autouse=True)
+def database_settings(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(
+        "DATABASE_URL", "postgresql+asyncpg://test:test@127.0.0.1:1/test"
+    )
+
+
+def test_settings_reject_and_redact_invalid_database_url(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    secret = "postgresql://test:synthetic-secret@127.0.0.1/test"
+    monkeypatch.setenv("DATABASE_URL", secret)
+    with pytest.raises(ValidationError) as error:
+        ServiceSettings()
+    assert secret not in str(error.value)
+    assert "synthetic-secret" not in str(error.value)
+
+
+def test_constructor_failure_cleans_up_partial_startup(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail(*args: object, **kwargs: object) -> AsyncEngine:
+        raise ArgumentError("synthetic private constructor detail")
+
+    monkeypatch.setattr(persistence, "create_async_engine", fail)
+    application = create_app()
+    with pytest.raises(ValueError, match="Invalid DATABASE_URL") as error:
+        with TestClient(application):
+            pytest.fail("A failed engine constructor must prevent startup")
+    assert "private constructor" not in str(error.value)
+    assert not hasattr(application.state, "db_engine")
+
+
+def test_readiness_without_started_resources_fails_closed() -> None:
+    application = create_app()
+    request = Request({"type": "http", "app": application})
+    with pytest.raises(RuntimeError, match="not initialized"):
+        asyncio.run(health.ready(request))
+
+
+def test_invalid_port_is_redacted(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(
+        "DATABASE_URL", "postgresql+asyncpg://test:test@127.0.0.1:synthetic-secret/test"
+    )
+    application = create_app()
+    with pytest.raises(ValueError, match="Invalid DATABASE_URL") as error:
+        with TestClient(application):
+            pytest.fail("Invalid engine configuration must prevent startup")
+    assert "synthetic-secret" not in str(error.value)
+    assert not hasattr(application.state, "db_engine")
+
+
+def test_readiness_queries_the_enabled_connection(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    statements: list[str] = []
+
+    class Connection:
+        async def execute(self, statement: TextClause) -> None:
+            statements.append(str(statement))
+
+    @asynccontextmanager
+    async def connect(engine: AsyncEngine) -> AsyncIterator[Connection]:
+        assert isinstance(engine, AsyncEngine)
+        yield Connection()
+
+    monkeypatch.setattr(AsyncEngine, "connect", connect)
+    application = create_app()
+    with TestClient(application) as client:
+        assert client.get("/health/ready").json() == {"status": "ready"}
+        factory = persistence.session_factory(application.state.db_engine)
+        assert factory.kw["bind"] is application.state.db_engine
+        assert factory.kw["expire_on_commit"] is False
+    assert statements == ["SELECT 1"]
+    assert not hasattr(application.state, "db_engine")

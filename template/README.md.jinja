@@ -1,0 +1,42 @@
+# {{ projectName }}
+
+A typed Python command-line starting point. Typer owns parsing and completion;
+Pydantic Settings owns lazy configuration validation. Add application scenarios
+behind the CLI when the project's requirements are defined.
+
+## 🚀 Quick start
+
+Requires Python 3.12+ and uv. Resolve and commit the first lock, then use Docker.
+
+```bash
+uv lock
+make check build verify
+```
+
+After installation, `{{ projectName }} --help`, `{{ projectName }} --version`
+and `python -m {{ packageName }} --version` work outside the checkout.
+`{{ projectName }} config show --limit 0 --no-enabled` is read-only.
+Explicit CLI values override `{{ packageName | upper }}_` environment variables,
+then an explicitly selected `--config file.env`, then defaults. No ambient dotenv
+file, HOME configuration, secret directory or database is loaded at import.
+An omitted option does not override env; explicit false and zero do. Null is
+invalid for these required bool/int settings. No machine JSON output is added.
+
+## 🧭 Architecture
+
+The [architecture note](docs/architecture.md) describes the CLI/settings boundary.
+Project-specific decisions belong in [PROJECT.md](PROJECT.md). Keep application
+modules and tests outside managed `tests/foundation/` so Copier updates preserve them.
+
+## 🧪 Testing
+
+`make check` runs locked lint, strict types, pytest and statement/branch reports.
+Coverage percentages are advisory; failing tests, builds and broken reports fail.
+`make verify` installs the built wheel in a separate container and runs the tests
+without checkout sources, including the executable and module subprocess checks.
+
+## 📚 Documentation
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for commands. Copier writes source/ref in
+`.copier-answers.yml`; update only from a clean checkout with a reviewed immutable
+ref and inspect conflicts. Template version and application version are independent.

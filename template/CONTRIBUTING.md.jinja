@@ -1,0 +1,18 @@
+# Contributing to {{ projectName }}
+
+Open a short `type/shortCamelCaseIntent` branch from the actual default branch. Keep each PR focused, review the full diff and outgoing commits, and use a `type(scope): intent` title. Explain purpose, ownership, compatibility, actual checks, privacy, version decision, and rollback. Do not attach secrets or live data.
+
+## 🧪 Local checks
+
+On the first render, run `uv lock` and commit `uv.lock`. After that, use the locked commands below; CI requires the committed lockfile.
+
+```bash
+uv lock --check
+uv sync --locked
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+uv run --locked mypy
+make build
+```
+
+{% if withTesting | default(true) %}Run `make check` for locked lint, types, foundation tests, and complete Python statement/branch coverage. Foundation tests live under `tests/foundation/`; keep application tests separate so an update preserves them. An empty test collection is a failure. External integrations need disposable resources; a simulated fault is not database acceptance.{% else %}Testing support was explicitly omitted from this render. `make test` fails with that reason; enable the capability and add real behavior tests before claiming verification.{% endif %} CI, package release, and deployment are separate from a local build. Record this project's decisions in `PROJECT.md`{% if profile == 'service' %} and `SERVICE.md`{% endif %}.

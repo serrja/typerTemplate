@@ -1,0 +1,23 @@
+name: Contribution
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+permissions:
+  contents: read
+jobs:
+  contribution:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Check naming without executing or checking out PR code
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          LEGACY_BRANCH: ${{ vars.LEGACY_PUBLISHED_BRANCH }}
+        run: |
+          set -euo pipefail
+          types='(feat|fix|test|refactor|docs|build|ci|chore|perf|style|revert)'
+          [[ ( -n "$LEGACY_BRANCH" && "$HEAD_REF" == "$LEGACY_BRANCH" ) || "$HEAD_REF" =~ ^$types/[a-z][A-Za-z0-9]*$ ]]
+          [[ "$PR_TITLE" != *$'\n'* && "$PR_TITLE" != *$'\r'* ]]
+          pattern="^$types\\([a-z][a-z0-9-]*\\)!?: .+$"
+          [[ "$PR_TITLE" =~ $pattern ]]

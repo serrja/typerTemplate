@@ -1,0 +1,10 @@
+"""Verify the generated adapter is installed and importable."""
+
+from __future__ import annotations
+
+from importlib import import_module
+
+
+def test_private_native_adapter_import() -> None:
+    adapter = import_module("{{ packageName }}._core")
+    assert adapter.__doc__ == "Private native adapter for {{ projectName }}"

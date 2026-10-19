@@ -1,0 +1,122 @@
+name: Release candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      reviewed_sha:
+        description: Full reviewed commit SHA already reachable from the default branch
+        required: true
+        type: string
+      tag:
+        description: Existing immutable v-prefixed tag pointing to reviewed_sha
+        required: true
+        type: string
+      release_notes:
+        description: Reviewed release notes, including compatibility and migrations
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: {% raw %}release-candidate-${{ github.ref }}{% endraw %}
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: {% raw %}${{ inputs.reviewed_sha }}{% endraw %}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify commit and tag
+        env:
+          REVIEWED_SHA: {% raw %}${{ inputs.reviewed_sha }}{% endraw %}
+          RELEASE_TAG: {% raw %}${{ inputs.tag }}{% endraw %}
+          DEFAULT_BRANCH: {% raw %}${{ github.event.repository.default_branch }}{% endraw %}
+        run: |
+          set -euo pipefail
+          [[ "$REVIEWED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$RELEASE_TAG" =~ ^v[0-9][0-9A-Za-z.+-]*$ ]]
+          test "$(git rev-parse HEAD)" = "$REVIEWED_SHA"
+          test "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")" = "$REVIEWED_SHA"
+          git merge-base --is-ancestor "$REVIEWED_SHA" "origin/$DEFAULT_BRANCH"
+      - uses: ./.github/actions/actionlint
+      - uses: astral-sh/setup-uv@5a7eac68fb9809dea845d802897dc5c723910fa3 # v7.1.3
+        with:
+          version: "0.12.15"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - run: uv python install {{ pythonMinimum | default('3.12') }}
+      - run: uv sync --locked --python {{ pythonMinimum | default('3.12') }}
+      - name: Verify package version with a PEP 440 parser
+        env:
+          RELEASE_TAG: {% raw %}${{ inputs.tag }}{% endraw %}
+          RELEASE_NOTES: {% raw %}${{ inputs.release_notes }}{% endraw %}
+        run: |
+          uv run --locked python - <<'PY'
+          import os
+          import tomllib
+          from pathlib import Path
+          from packaging.version import Version
+
+          with Path('pyproject.toml').open('rb') as source:
+              version = tomllib.load(source)['project']['version']
+          if Version(version) != Version(os.environ['RELEASE_TAG'][1:]):
+              raise SystemExit('Tag and project version differ')
+          notes = os.environ['RELEASE_NOTES'].strip()
+          if not notes:
+              raise SystemExit('Release notes must be nonempty')
+          (Path(os.environ['RUNNER_TEMP']) / 'release-notes.md').write_text(notes + '\n')
+          PY
+      - name: Locked quality, tests and artifacts
+        run: |
+          set -euo pipefail
+          uv lock --check
+          uv sync --locked --python {{ pythonMinimum | default('3.12') }}
+          make check build
+{% if withDocker | default(profile == 'service') %}      - name: Build image candidate
+        run: |
+          docker build --file Dockerfile --tag {{ packageName | lower }}:candidate .
+          docker image inspect --format='{% raw %}{{.Id}}{% endraw %}' {{ packageName | lower }}:candidate > "$RUNNER_TEMP/image-id"
+{% endif %}      - name: Record immutable artifact identities
+        env:
+          REVIEWED_SHA: {% raw %}${{ inputs.reviewed_sha }}{% endraw %}
+          RELEASE_TAG: {% raw %}${{ inputs.tag }}{% endraw %}
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          temp = Path(os.environ['RUNNER_TEMP'])
+          artifacts = sorted(Path('dist').iterdir())
+          if not artifacts or any(not path.is_file() for path in artifacts):
+              raise SystemExit('No build artifacts')
+          manifest = {
+              'commit': os.environ['REVIEWED_SHA'],
+              'tag': os.environ['RELEASE_TAG'],
+              'artifacts': {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in artifacts},
+              'publication': 'notConfigured',
+              'deployment': 'notConfigured',
+          }
+          image_id = temp / 'image-id'
+          if image_id.exists():
+              manifest['local_image_id'] = image_id.read_text().strip()
+          (temp / 'artifact-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+          PY
+          echo 'Publication and deployment: notConfigured; no registry or target selected.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: {% raw %}candidate-${{ inputs.tag }}{% endraw %}
+          path: |
+            dist/*
+            {% raw %}${{ runner.temp }}{% endraw %}/release-notes.md
+            {% raw %}${{ runner.temp }}{% endraw %}/artifact-manifest.json
+          if-no-files-found: error
+          retention-days: 30

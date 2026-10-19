@@ -1,0 +1,5 @@
+{% extends "template/_base/pyproject.toml.jinja" %}
+{% block runtimeDependencies %}"typer==0.27.3", "pydantic>=2.12,<3", "pydantic-settings>=2.12,<3"{% endblock %}
+{% block scripts %}[project.scripts]
+{{ projectName }} = "{{ packageName }}.cli:app"
+{% endblock %}

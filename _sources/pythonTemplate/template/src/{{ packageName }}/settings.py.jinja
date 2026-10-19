@@ -1,0 +1,38 @@
+"""Validated process configuration; no settings are read at import time."""
+
+from __future__ import annotations
+
+from typing import Literal
+
+from pydantic import AliasChoices, Field{% if withPersistence | default(false) %}, SecretStr, field_validator{% endif %}
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class ServiceSettings(BaseSettings):
+    """External environment boundary for this generated service."""
+
+    model_config = SettingsConfigDict(
+        env_prefix="{{ projectName | upper }}_",
+        extra="ignore",
+        validate_default=True,
+        hide_input_in_errors=True,
+    )
+
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = Field(
+        default="INFO",
+        validation_alias=AliasChoices(
+            "{{ projectName | upper }}_LOGLEVEL", "{{ projectName | upper }}_LOG_LEVEL"
+        ),
+    ){% if withPersistence | default(false) %}
+    database_url: SecretStr = Field(
+        default=SecretStr(""), validation_alias="DATABASE_URL", repr=False
+    )
+
+    @field_validator("database_url")
+    @classmethod
+    def require_database_url(cls, value: SecretStr) -> SecretStr:
+        if not value.get_secret_value().startswith("postgresql+asyncpg://"):
+            raise ValueError(
+                "DATABASE_URL must use postgresql+asyncpg when persistence is enabled"
+            )
+        return value{% endif %}

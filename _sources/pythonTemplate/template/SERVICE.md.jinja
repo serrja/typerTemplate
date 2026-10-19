@@ -1,0 +1,4 @@
+{% if profile == 'service' %}# {{ projectName }} service contract
+
+Record the service's actual API, data ownership, external dependencies, and deployment target here. This file belongs to the generated project and Copier skips it on update. No business endpoint or authentication policy is supplied by the template. Persistence is {% if withPersistence | default(false) %}enabled and requires `DATABASE_URL`; no schema has been created{% else %}disabled and requires no database credentials{% endif %}.
+{% endif %}

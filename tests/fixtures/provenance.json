@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/serrja/pythonTemplate",
+  "commit": "9a4b58e3921b39161bf12f51a98f8b317599ba9c",
+  "paths": [
+    "copier.yml",
+    "template"
+  ],
+  "archiveSha256": "cb52ff7c690127ec3081f74891c86be5758c6fbf50872c101fdc4fd0701fb4e7",
+  "role": "Frozen migration test input only; never an active scaffold or edited implementation."
+}

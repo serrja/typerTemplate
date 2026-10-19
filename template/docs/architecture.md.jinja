@@ -1,0 +1,17 @@
+# {{ projectName }} architecture
+
+Typer parses documented argument types and calls application functions. Pydantic
+Settings validates application configuration when a command explicitly requests it.
+
+## 🧭 Ownership
+
+`cli.py` owns commands and safe terminal errors. `settings.py` owns configuration
+types and source priority. Add domain scenarios and external adapters only when
+needed; do not resolve FastAPI Depends outside HTTP or add a command framework.
+
+## 🔒 Boundaries
+
+No settings, files, connections or downloads occur during import, help or version.
+The config command reads only its selected file and prints nonsecret demonstration
+settings. Future secret fields require an explicit safe projection; do not print
+ValidationError input or enable traceback locals. No business writes are supplied.
