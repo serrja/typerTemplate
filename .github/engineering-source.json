@@ -1,6 +1,6 @@
 {
   "repository": "https://github.com/serrja/pythonTemplate",
-  "revision": "9f7571758351b81e7d11818d6ccbad878ab063aa",
+  "revision": "a07ca3076ef55da570299f75e46d54f9f006b5db",
   "files": {
     ".github/PULL_REQUEST_TEMPLATE.md": {
       "source": "template/.github/PULL_REQUEST_TEMPLATE.md.jinja",

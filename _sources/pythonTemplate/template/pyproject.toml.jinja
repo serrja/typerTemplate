@@ -35,7 +35,8 @@ select = ["B", "E", "F", "I", "N", "RUF", "UP"]
 [tool.mypy]
 python_version = "{{ pythonMinimum | default('3.12') }}"
 strict = true
-files = ["src/{{ packageName }}"]{% if withTesting | default(true) %}
+files = ["src/{{ packageName }}"]
+{% block extraMypy %}{% endblock %}{% if withTesting | default(true) %}
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers --strict-config --import-mode=importlib"

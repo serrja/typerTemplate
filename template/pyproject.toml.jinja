@@ -3,3 +3,5 @@
 {% block scripts %}[project.scripts]
 {{ projectName }} = "{{ packageName }}.cli:app"
 {% endblock %}
+{% block extraMypy %}plugins = ["pydantic.mypy"]
+{% endblock %}
