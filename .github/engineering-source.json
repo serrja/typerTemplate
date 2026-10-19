@@ -1,6 +1,6 @@
 {
   "repository": "https://github.com/serrja/pythonTemplate",
-  "revision": "7853b1df0e267b06978ca03e3eda30ce0e8db754",
+  "revision": "0eecd2b2660dde52b94be45b48ae11640ce0ac1c",
   "files": {
     ".github/PULL_REQUEST_TEMPLATE.md": {
       "source": "template/.github/PULL_REQUEST_TEMPLATE.md.jinja",
@@ -40,11 +40,11 @@
     },
     "tools/check_documentation.py": {
       "source": "tools/check_documentation.py",
-      "sha256": "d20ab03287a1bc52b3aeaac201391c51e1d237d52c3315359668dfde62dce036"
+      "sha256": "3cd134518cd4f126d911e98c92122d1f9187fe0eaeba37a78349cb191589f4c0"
     },
     "tests/test_documentation.py": {
       "source": "tests/test_documentation.py",
-      "sha256": "69f4492f72b8d2016f309f5ccead2c98e4ac7fb835fe60836cb32e4cb93f53d7"
+      "sha256": "e9cc5efb02abba1fc6709707a295e4161ba71ab23f2a186be1c2af3757aaa4fa"
     },
     "tests/test_coverage_policy.py": {
       "source": "tests/test_coverage_policy.py",
