@@ -30,7 +30,10 @@ target-version = "{{ ruffTarget | default('py312') }}"
 line-length = 88
 
 [tool.ruff.lint]
-select = ["B", "E", "F", "I", "N", "RUF", "UP"]
+select = ["B", "E", "F", "I", "N", "RUF", "UP", "TID252"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
 
 [tool.mypy]
 python_version = "{{ pythonMinimum | default('3.12') }}"

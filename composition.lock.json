@@ -15,7 +15,7 @@
     ".github/workflows/release.yml.jinja": "197d73a00aae0753dc4df62399819b4a98eec209af5029c1e78b28bfe4af8532",
     ".gitignore": "732f5ce68b4b13ef900931ca4a47ef00acffa7cdb7b699feb0e8a8d7ac719d82",
     ".pre-commit-config.yaml": "ce876c91a3925b76317a9875c15d344f78e3be9936662ac8b0c64f224f6f98da",
-    ".template-source.json": "e18e4646f942b51bd7b8fdd09ad1e5f98b546103abffb39d2652e8f5df9f08f1",
+    ".template-source.json": "c47f4f471ef96c78424002fcebfd63dd80ca5a80428aa15aee7a2d47cc01a913",
     "AGENTS.md.jinja": "88180e189e4151d9764228f6e039cb916a1b46ee543ff3511372ed1cc19bb865",
     "CONTRIBUTING.md.jinja": "5ae3b7d2871613bf4dc676c32a76de330774f7a0014d19964d1bcb56c8844f7f",
     "Dockerfile.quality": "d7c50a1fff554d6eb9e8d13837725ce038dd596c5374c006d1fff2c6bd3b8df3",
@@ -24,7 +24,7 @@
     "PROJECT.md.jinja": "d5bc786f311f73282d02270a5b97682a10559dc590c37d3dadec29975c84ee90",
     "README.md.jinja": "0fb48ffce7ca7b6613df2c1afbf5853f3d567381812e7e9e426fc954188a383b",
     "_base/Makefile.jinja": "0c0624b6badd2be0fde4299eb6975a67d9e344b63e17a0c0de4875ab75cbd3a6",
-    "_base/pyproject.toml.jinja": "4c015256a1dc574e0b1543557fab1b262f32c645db22b602befb23c038ab6fdc",
+    "_base/pyproject.toml.jinja": "bdadaa18e14e5833ca96b23b31ad9e45711439d202ac0b6e02765a56788fd2be",
     "docker/coverage_report.py": "87c19af8b26f2134fb3ac06a8ea9325f22998cef28b15a37b9a2debf1ac00300",
     "docker/quality-python.mk": "65cc6b6a47ebead0dc56466f88fbc507d61556119f7c38de2ef61f6a6f449224",
     "docker/quality.mk": "881cd3677effdf37503bd4c1980c0ce11403a6306bb8cdb2974779ff601fa6a4",
@@ -32,12 +32,12 @@
     "pyproject.toml.jinja": "c32a5645d78a17ac93115bcd8a3db73d476976c3cd0444d8aa0b43f2590d153b",
     "src/{{ packageName }}/__init__.py.jinja": "25126401c4e8d49efdb4ed83ad43da641aaa132b51b2ee23b11652b3b0d078fd",
     "src/{{ packageName }}/__main__.py.jinja": "741949e2a9cf78ac1e36673ca380ee68ab300a1c570194aaa6f20f9a37e2f970",
-    "src/{{ packageName }}/cli.py.jinja": "62536faeac3d589d331705ba3f0ae31eafdbd50b484ea43e53db84d4da8d0fcf",
+    "src/{{ packageName }}/cli.py.jinja": "9d64c057bcdad1be9cdbe7c6a957062dd6e983437e9983b9d8bd37fd1e75e7de",
     "src/{{ packageName }}/settings.py.jinja": "eb895eab11bdd3874377536419926e104b0c5dc20e6bcc4b6731f032c4114a6c",
-    "tests/foundation/test_cli.py.jinja": "02da619fb194b6812a2bee5e82b3ddaf5ba0e42e1753224efc880e9abc1e022f",
+    "tests/foundation/test_cli.py.jinja": "179d5e590ba04ce3143fcd4464bb6ae1ee3e62bffac7faa496f4ddce1fd7d48c",
     "tests/foundation/test_package.py.jinja": "0deb617f92fd0d99648913a29b23d536893153076350ba862f562864549b7dd0"
   },
-  "overlayContentSha256": "14b27be3ce1be196fc560054116d8b0966e1277b996466a5476a447555c26608",
+  "overlayContentSha256": "7c831debec97eb99aa5d04dab5966afea227d0f3c07718822099bfa19ccd2471",
   "owners": {
     ".copier-answers.yml.jinja": "parent",
     ".dockerignore": "parent",
@@ -73,8 +73,8 @@
     "tests/foundation/test_cli.py.jinja": "overlay",
     "tests/foundation/test_package.py.jinja": "parent"
   },
-  "parentContentSha256": "9077331c639343d49010242758ba31ee8b73f0d42e613fa36b2043a5920c884e",
+  "parentContentSha256": "b3e937f4f46e2247b2660b26452a64f88998721f4dce433f38e979019b6990e3",
   "schema": 1,
-  "sourceContentSha256": "4e8c7e1a35f35a752e6f0cc67fe49a4a1a2d7903a9453aca14982ef09018482a",
+  "sourceContentSha256": "cdd39c09599f1be3364bf34f8fe1a06e933e3a5939bc346c6a61ac62942ca736",
   "templateVersion": "0.1.0.dev0"
 }
