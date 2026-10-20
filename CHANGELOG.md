@@ -2,6 +2,11 @@
 
 Notable source and tooling changes are recorded below.
 
+## Unreleased
+
+Point README version references at canonical metadata and the shared release guide.
+The published template tags, generated files and compatibility are unchanged.
+
 ## 0.1.0.dev1
 
 Compatible tooling prerelease: inherit source-bound local CI and version/artifact
