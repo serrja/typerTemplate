@@ -3,8 +3,9 @@ QUALITY_IMAGE := typertemplate:quality
 QUALITY_NETWORK := bridge
 QUALITY_EXTRA_TARGETS := test-integration
 IMAGE_COMMAND = printf "%s\n" "notApplicable: this repository owns template source"
-VERIFY_COMMAND = $(MAKE) render RENDER_OUTPUT="$(CURDIR)/.local/verified-render" RENDER_ARGS="-d projectName=verifyCli"
-BUILD_COMMAND = printf "%s\n" "notApplicable: maintenance source; run render verification for package artifacts"
+VERIFY_COMMAND = $(QUALITY_RUN) python docker/release.py bundle-verify
+BUILD_COMMAND = $(QUALITY_RUN) python docker/release.py bundle-build
+OFFLINE_PREFLIGHT_COMMAND = true
 include docker/quality-python.mk
 else
 .DEFAULT_GOAL := help
@@ -30,7 +31,7 @@ typecheck: ## Check maintenance sources with strict mypy.
 	$(UV) run --locked mypy
 
 test: ## Run composition and real Copier regressions with full coverage.
-	$(UV) run --locked pytest --cov --cov-report=term-missing --cov-report=json --cov-report=xml
+	$(UV) run --locked pytest --junitxml=coverage/junit.xml --cov --cov-report=term-missing --cov-report=json --cov-report=xml
 
 test-unit: ## Run composition behavior tests.
 	$(UV) run --locked pytest tools/test_composition.py

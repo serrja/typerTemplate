@@ -28,7 +28,7 @@ typecheck: ## Check strict Python types.
 	$(UV) run --locked mypy
 
 {% if withTesting | default(true) %}test-unit: ## Run isolated tests and complete Python coverage.
-	$(UV) run --locked pytest --cov --cov-report=term-missing --cov-report=json --cov-report=xml
+	$(UV) run --locked pytest --junitxml=coverage/junit.xml --cov --cov-report=term-missing --cov-report=json --cov-report=xml
 {% else %}test-unit: ## Fail explicitly because this render omitted testing support.
 	@echo 'Testing was disabled for this render.' >&2
 	@exit 2

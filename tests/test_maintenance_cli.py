@@ -75,5 +75,6 @@ def test_composition_schema_uses_explicit_aliases_and_hides_invalid_input() -> N
     else:
         raise AssertionError("Incomplete contract accepted")
     schema = compose_template.CompositionConfig.model_json_schema()
-    assert "templateVersion" in schema["properties"]
+    assert "templateVersion" not in schema["properties"]
+    assert "answersSchema" in schema["properties"]
     assert "template_version" not in schema["properties"]

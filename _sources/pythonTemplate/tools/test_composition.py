@@ -40,6 +40,7 @@ def base(tmp_path: Path) -> Path:
     write(root / "template/base.txt", "Parent content\n")
     write(root / "template/nested/value.txt", "Nested content\n")
     write(root / "copier.yml", "_subdirectory: template\n")
+    write(root / "pyproject.toml", '[project]\nname="base"\nversion="0.3.0.dev1"\n')
     write(root / "tools/compose_template.py", TOOL.read_text())
     write(root / "tools/test_composition.py", Path(__file__).read_text())
     return root
@@ -49,11 +50,12 @@ def base(tmp_path: Path) -> Path:
 def derivative(tmp_path: Path, base: Path) -> tuple[Path, dict[str, Any]]:
     root = tmp_path / "derivative"
     root.mkdir()
+    write(root / "pyproject.toml", '[project]\nname="derived"\nversion="0.2.0.dev0"\n')
     write(root / "overlay/base.txt", "Derivative content\n")
     write(root / "overlay/owned.txt", "Overlay content\n")
     write(
         root / "composition.toml",
-        'templateVersion = "0.2.0.dev0"\nanswersSchema = 1\n'
+        "answersSchema = 1\n"
         'snapshot = "_sources/base"\noverlay = "overlay"\noutput = "template"\n'
         'include = ["base.txt", "nested/value.txt"]\nallowOverride = ["base.txt"]\n'
         '[retainBase]\n"base.txt" = "_base/base.txt"\n'
@@ -97,7 +99,7 @@ def test_stamp_is_stable_and_covers_configuration_and_tool(base: Path) -> None:
     stamp = json.loads((base / "template/.template-source.json").read_text())
     assert stamp["sourceContentSha256"] == first
     assert stamp["answersSchema"] == composer.BASE_ANSWERS_SCHEMA
-    assert stamp["templateVersion"] == composer.BASE_TEMPLATE_VERSION
+    assert stamp["templateVersion"] == composer.template_version(base)
     write(base / "copier.yml", "_subdirectory: template\n_answers_file: answers.yml\n")
     assert composer.stamp_base(base) != first
 
@@ -108,7 +110,15 @@ def test_refresh_records_git_and_parent_composition(tmp_path: Path, base: Path) 
     snapshot = root / "_sources/base"
     write(base / "composition.lock.json", '{"schema": 1}\n')
     git(base, "init", "--quiet")
-    git(base, "add", "copier.yml", "template", "tools", "composition.lock.json")
+    git(
+        base,
+        "add",
+        "copier.yml",
+        "pyproject.toml",
+        "template",
+        "tools",
+        "composition.lock.json",
+    )
     git(
         base,
         "-c",
@@ -220,8 +230,7 @@ def test_assemble_has_deterministic_provenance_and_ownership(
 @pytest.mark.parametrize(
     ("key", "value", "message"),
     [
-        ("templateVersion", "", "templateVersion"),
-        ("templateVersion", 1, "templateVersion"),
+        ("templateVersion", "0.9", "templateVersion"),
         ("answersSchema", "1", "answersSchema"),
         ("answersSchema", 0, "answersSchema"),
         ("answersSchema", True, "answersSchema"),
@@ -440,3 +449,43 @@ def test_repository_source_collision_is_rejected(
     config["includeRepository"] = ["base.txt"]
     with pytest.raises(ValueError, match="collides"):
         composer.assemble(root, config)
+
+
+def test_engineering_subset_adoption_and_local_edit_protection(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "owner"
+    write(root / "template/docker/quality.mk", "first\n")
+    write(root / "template/docker/source_identity.sh", "source\n")
+    git(root, "init", "--quiet")
+    git(root, "add", ".")
+    git(
+        root,
+        "-c",
+        "user.name=Fixture",
+        "-c",
+        "user.email=fixture@example.invalid",
+        "commit",
+        "--quiet",
+        "-m",
+        "source",
+    )
+    target = tmp_path / "consumer"
+    target.mkdir()
+    composer.sync_engineering(root, target, ["docker/quality.mk"])
+    record = json.loads((target / ".github/engineering-source.json").read_text())
+    assert record["files"]["docker/quality.mk"]["revision"] == git(
+        root, "rev-parse", "HEAD"
+    )
+    write(target / "docker/quality.mk", "owner edit\n")
+    with pytest.raises(ValueError, match="unreviewed local edits"):
+        composer.sync_engineering(
+            root, target, ["docker/source_identity.sh", "docker/quality.mk"]
+        )
+    assert not (target / "docker/source_identity.sh").exists()
+    assert (target / "docker/quality.mk").read_text() == "owner edit\n"
+    with pytest.raises(ValueError, match="explicit portable"):
+        composer.sync_engineering(root, target, ["../outside"])
+    write(root / "template/docker/quality.mk", "uncommitted\n")
+    with pytest.raises(ValueError, match="clean source commit"):
+        composer.sync_engineering(root, target, ["docker/source_identity.sh"])

@@ -10,6 +10,8 @@ _skip_if_exists:
   - "src/*/settings.py"
   - "migrations/**"
 _exclude:
+  - "_meta"
+  - "_meta/**"
   - .vscode
   - .vscode/**
   - .serena
@@ -46,6 +48,9 @@ projectName:
     Use ASCII letters and digits, starting with a letter.
     {%- elif projectName[0].islower() == false -%}
     Start with a lowercase letter (camelCase).
+    {%- else -%}
+    {%- set python_name = projectName | lower -%}
+    {%- include "template/_meta/python-name-validator.jinja" -%}
     {%- endif -%}
 
 profile:

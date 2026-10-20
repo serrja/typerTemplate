@@ -30,7 +30,7 @@ jobs:
           cache-from: type=gha,scope=${{ github.repository_id }}-quality-linux-amd64-${{ github.event_name == 'pull_request' && 'review' || 'trusted' }}
           cache-to: type=gha,mode=max,scope=${{ github.repository_id }}-quality-linux-amd64-${{ github.event_name == 'pull_request' && 'review' || 'trusted' }}
       - name: Fresh maintenance lint, types and Copier regressions
-        run: make check
+        run: make ci-local
       - name: Advisory coverage summary
         if: always()
         run: test ! -f coverage/summary.md || cat coverage/summary.md >> "$GITHUB_STEP_SUMMARY"
@@ -84,7 +84,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ github.repository_id }}-render-${{ matrix.variant }}-quality-linux-amd64-${{ github.event_name == 'pull_request' && 'review' || 'trusted' }}
       - name: Source suite, wheel/sdist and fresh installed-package suite
         working-directory: ${{ runner.temp }}/rendered
-        run: make check build verify
+        run: make ci-local
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
