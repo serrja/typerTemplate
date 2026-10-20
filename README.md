@@ -7,9 +7,10 @@ Pokerlost contracts and no runtime dependency on another checkout.
 
 ## 🚀 Create and verify
 
-Python 3.12+, uv 0.12.15 and Copier 9.17.2 are required. Select a reviewed full
-commit; template 0.1.0.dev0, answers schema 1 and generated package 0.1.0 have
-independent versions. The parent is Python base 0.3.0.dev0 with schema 1.
+Python 3.12+, uv 0.12.15 and Copier 9.17.2 are required. Select a reviewed version
+tag or full commit. `make version` reads the canonical template version;
+`composition.lock.json` records the selected parent. Answers schema and generated
+application version are independent of both template versions.
 
 ```bash
 uvx --from 'copier==9.17.2' copier copy --defaults --vcs-ref=<reviewed-sha> git@github.com:serrja/typerTemplate.git notes-cli -d projectName=notesCli
@@ -82,4 +83,6 @@ Original additions use [MIT](LICENSE); inherited source and dependencies retain
 their [notices](THIRD_PARTY_NOTICES.md). Generated projects choose `licensePolicy`
 and their own holder/year through the common Python foundation.
 
-For this template source, use `make version` and `make ci-local`; see [development](docs/development.md) and [version/release boundaries](docs/versioning.md).
+For this template source, use `make version` and `make ci-local`; see
+[development](docs/development.md), [version boundaries](docs/versioning.md) and the
+[shared release guide](https://github.com/serrja/baseRules/blob/main/docs/releases.md).
