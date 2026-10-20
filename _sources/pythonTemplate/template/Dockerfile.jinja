@@ -2,7 +2,10 @@
 FROM python:3.12.12-slim-bookworm@sha256:593bd06efe90efa80dc4eee3948be7c0fde4134606dd40d8dd8dbcade98e669c AS build
 WORKDIR /app
 COPY pyproject.toml uv.lock README.md ./
-COPY src ./src
+COPY LICENSES ./LICENSES
+COPY THIRD_PARTY_NOTICES.md ./
+{% if licensePolicy | default('unlicensed') == 'MIT' %}COPY LICENSE ./
+{% endif %}COPY src ./src
 {% if withPersistence | default(false) %}COPY alembic.ini ./
 COPY migrations ./migrations
 {% endif %}
@@ -11,6 +14,11 @@ RUN python -m pip install --no-cache-dir uv==0.12.15 && uv sync --locked --no-de
 FROM python:3.12.12-slim-bookworm@sha256:593bd06efe90efa80dc4eee3948be7c0fde4134606dd40d8dd8dbcade98e669c
 WORKDIR /app
 COPY --from=build /app/.venv /app/.venv
+COPY --chmod=u=rwX,go=rX --from=build /app/LICENSES /licenses/scaffold
+COPY --chmod=0444 --from=build /app/THIRD_PARTY_NOTICES.md /licenses/THIRD_PARTY_NOTICES.md
+{% if licensePolicy | default('unlicensed') == 'MIT' %}COPY --chmod=0444 --from=build /app/LICENSE /licenses/LICENSE
+LABEL org.opencontainers.image.licenses="MIT"
+{% endif %}
 ENV PATH="/app/.venv/bin:$PATH"
 USER 65532:65532
 CMD ["uvicorn", "{{ packageName }}.app:app", "--host", "0.0.0.0", "--port", "8000"]

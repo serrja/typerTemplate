@@ -3,7 +3,12 @@ answersSchema = 1
 snapshot = "_sources/pythonTemplate"
 overlay = "overlay"
 output = "template"
-include = [".copier-answers.yml.jinja", ".dockerignore", ".editorconfig", ".github/ISSUE_TEMPLATE/bug.yml", ".github/ISSUE_TEMPLATE/feature.yml", ".github/PULL_REQUEST_TEMPLATE.md.jinja", ".github/actions/actionlint/action.yml", ".github/workflows/ci.yml.jinja", ".github/workflows/contribution.yml", ".github/workflows/release.yml.jinja", ".gitignore", ".pre-commit-config.yaml", "AGENTS.md.jinja", "CONTRIBUTING.md.jinja", "Dockerfile.quality", "Dockerfile.quality.dockerignore", "Makefile.jinja", "PROJECT.md.jinja", "README.md.jinja", "docker/coverage_report.py", "docker/quality-python.mk", "docker/quality.mk", "docs/architecture.md.jinja", "pyproject.toml.jinja", "src/{{ packageName }}/__init__.py.jinja", "tests/foundation/test_package.py.jinja"]
+include = [
+  "_meta/license-questions.yml",
+  "LICENSE.jinja",
+  "LICENSES/pythonTemplate-MIT.txt",
+  "THIRD_PARTY_NOTICES.md.jinja",
+".copier-answers.yml.jinja", ".dockerignore", ".editorconfig", ".github/ISSUE_TEMPLATE/bug.yml", ".github/ISSUE_TEMPLATE/feature.yml", ".github/PULL_REQUEST_TEMPLATE.md.jinja", ".github/actions/actionlint/action.yml", ".github/workflows/ci.yml.jinja", ".github/workflows/contribution.yml", ".github/workflows/release.yml.jinja", ".gitignore", ".pre-commit-config.yaml", "AGENTS.md.jinja", "CONTRIBUTING.md.jinja", "Dockerfile.quality", "Dockerfile.quality.dockerignore", "Makefile.jinja", "PROJECT.md.jinja", "README.md.jinja", "docker/coverage_report.py", "docker/quality-python.mk", "docker/quality.mk", "docs/architecture.md.jinja", "pyproject.toml.jinja", "src/{{ packageName }}/__init__.py.jinja", "tests/foundation/test_package.py.jinja"]
 allowOverride = ["pyproject.toml.jinja", "README.md.jinja", "docs/architecture.md.jinja", "Makefile.jinja"]
 retainBase = { "pyproject.toml.jinja" = "_base/pyproject.toml.jinja", "Makefile.jinja" = "_base/Makefile.jinja" }
 smokeAnswers = { projectName = "sampleCli", withTesting = true, withCi = false }

@@ -1,0 +1,12 @@
+# Third-party notices
+
+The original pythonTemplate scaffold is copyright (c) 2026 serrja, licensed under
+[MIT](LICENSES/pythonTemplate-MIT.txt). Preserve that notice when redistributing
+substantial scaffold portions. This does not assign your project's authorship.
+
+{% if licensePolicy | default('unlicensed') == 'MIT' %}This project's own code uses [MIT](LICENSE); the owner confirmed the holder and year.
+{% else %}No project license was selected. Obtain the owner's terms before redistribution.
+{% endif %}
+Dependencies, base images, compiler runtimes and any added assets keep their own
+upstream terms. Review the resolved lock and shipped distributions before release;
+this scaffold does not declare them MIT.

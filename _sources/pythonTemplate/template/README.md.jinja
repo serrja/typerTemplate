@@ -33,3 +33,12 @@ make build
 
 The [architecture note](docs/architecture.md) records boundaries. The `AGENTS.md` file describes repository work rules. `PROJECT.md`{% if profile == 'service' %} and `SERVICE.md`{% endif %} are project-owned and survive template updates.
 The local [contribution guide](CONTRIBUTING.md) lists the project's commands and review process.{% if withCi | default(true) %} `.github/workflows/release.yml` is a manual release-candidate build for an already authorized tag; it checks commit and version, uploads artifact hashes and notes, and marks publication and deployment `notConfigured` until a registry and target are selected.{% else %} No release or production deployment is configured.{% endif %}
+
+## 📄 License policy
+
+Copier records the explicit `licensePolicy` choice. Its default is `unlicensed`;
+this is not permission to redistribute. Select `MIT`, supply the actual
+`licenseHolder` and confirm `licenseYear` to generate your project's `LICENSE` and
+SPDX metadata. Existing owner `LICENSE` and `THIRD_PARTY_NOTICES.md` survive updates.
+Keep [scaffold notices](THIRD_PARTY_NOTICES.md); review any added dependency or asset
+before release. License selection does not change repository visibility.
