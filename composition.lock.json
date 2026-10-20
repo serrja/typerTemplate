@@ -15,7 +15,7 @@
     ".github/workflows/release.yml.jinja": "197d73a00aae0753dc4df62399819b4a98eec209af5029c1e78b28bfe4af8532",
     ".gitignore": "732f5ce68b4b13ef900931ca4a47ef00acffa7cdb7b699feb0e8a8d7ac719d82",
     ".pre-commit-config.yaml": "ce876c91a3925b76317a9875c15d344f78e3be9936662ac8b0c64f224f6f98da",
-    ".template-source.json": "994e143227ab259019b46021b44e39957295208260c5cdd0dbf89e153182c517",
+    ".template-source.json": "c3cb8872664ede1faf00423cade3df9ec1ba59893573aa2281f45d09ab8d6f0c",
     "AGENTS.md.jinja": "c22b27fcab3d4a887f8adbf26cd6b9c45c2d17fcc7ab1cd174573bc9e465091e",
     "CONTRIBUTING.md.jinja": "5ae3b7d2871613bf4dc676c32a76de330774f7a0014d19964d1bcb56c8844f7f",
     "Dockerfile.quality": "d7c50a1fff554d6eb9e8d13837725ce038dd596c5374c006d1fff2c6bd3b8df3",
@@ -26,7 +26,7 @@
     "PROJECT.md.jinja": "d5bc786f311f73282d02270a5b97682a10559dc590c37d3dadec29975c84ee90",
     "README.md.jinja": "2b6ca0b1d09ab5638545ce946a870d2f8471c4182d07d2678bca852d40063212",
     "THIRD_PARTY_NOTICES.md.jinja": "6e4668a4d6342d6e07b5733c894dcd0ff4cde9b1f441e9a5bb5593adc0fac187",
-    "_base/Makefile.jinja": "0c0624b6badd2be0fde4299eb6975a67d9e344b63e17a0c0de4875ab75cbd3a6",
+    "_base/Makefile.jinja": "5ba6a3054ea475a517aa5f154b476bc76bee44325c40aa756e05e0429c642075",
     "_base/pyproject.toml.jinja": "0c6b9bdc02b307fb0a5dc070491a25ca60869fe4083469fb271919e5a8784a3c",
     "_meta/license-questions.yml": "9787a062df8c50f35bec50174c9c53cf577a45b3f0c57634e67ec7fed9586b75",
     "docker/coverage_report.py": "75c5b398842ae3199da118ef5c15ce9616c3b6de921de98056bdcb1744e4c85e",
@@ -81,8 +81,8 @@
     "tests/foundation/test_cli.py.jinja": "overlay",
     "tests/foundation/test_package.py.jinja": "parent"
   },
-  "parentContentSha256": "6bc1f02c39cc89335e11da128404d38168dbcb21d554606a190db02294200a9b",
+  "parentContentSha256": "3ce85b738506ee26fc8b8533e80bafbdfd5dc083c642e8a1290aec8094d1d3a1",
   "schema": 1,
-  "sourceContentSha256": "14b10ea531724d8dac8a52bc15296806a744de450c4b924732c0bae5316e8a39",
+  "sourceContentSha256": "84d56118a01c5464b63f909f492267de97d51dfe517a399138c26f74ef842fe2",
   "templateVersion": "0.1.0.dev0"
 }
