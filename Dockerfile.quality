@@ -6,7 +6,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends make git build-
 WORKDIR /app
 ENV PATH=/app/.venv/bin:$PATH UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never PYTHONDONTWRITEBYTECODE=1 CONTAINERIZED=1
 COPY pyproject.toml uv.lock README.md .gitignore ./
-RUN --mount=type=cache,id=python-quality-uv-314-linux-amd64,target=/root/.cache/uv,sharing=locked uv sync --locked --all-groups --no-install-project
+ARG TARGETPLATFORM
+RUN --mount=type=cache,id=typertemplate-quality-dependencies-uv-314-${TARGETPLATFORM},target=/root/.cache/uv,sharing=locked uv sync --locked --all-groups --no-install-project
 FROM quality-dependencies AS quality
 COPY --chmod=u=rwX,go=rX . ./
 RUN uv sync --locked --offline

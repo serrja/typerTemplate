@@ -78,10 +78,10 @@ jobs:
           set -euo pipefail
           uv lock --check
           uv sync --locked --python {{ pythonMinimum | default('3.12') }}
-          make check build
+          make ci-local
 {% if withDocker | default(profile == 'service') %}      - name: Build image candidate
         run: |
-          docker build --file Dockerfile --tag {{ packageName | lower }}:candidate .
+          make image
           docker image inspect --format='{% raw %}{{.Id}}{% endraw %}' {{ packageName | lower }}:candidate > "$RUNNER_TEMP/image-id"
 {% endif %}      - name: Record immutable artifact identities
         env:

@@ -30,7 +30,7 @@ jobs:
           cache-from: type=gha,scope={% raw %}${{ github.repository_id }}{% endraw %}-quality-linux-amd64-{% raw %}${{ github.event_name == 'pull_request' && 'review' || 'trusted' }}{% endraw %}
           cache-to: type=gha,mode=max,scope={% raw %}${{ github.repository_id }}{% endraw %}-quality-linux-amd64-{% raw %}${{ github.event_name == 'pull_request' && 'review' || 'trusted' }}{% endraw %}
       - name: Fresh native checks, distributions and installed-package verification
-        run: make check build verify
+        run: make ci-local
       - name: Advisory coverage summary
         if: always()
         run: test ! -f coverage/summary.md || cat coverage/summary.md >> "$GITHUB_STEP_SUMMARY"

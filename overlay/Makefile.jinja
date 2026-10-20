@@ -4,3 +4,9 @@
 run: ## Run the installed command with the locked environment.
 	$(UV) run --locked {{ projectName }}
 {% endblock %}
+
+{% block dockerSettings %}{{ super() }}
+.PHONY: run
+run: ## Run the CLI with its locked native environment.
+	$(MAKE) CONTAINERIZED=1 run
+{% endblock %}

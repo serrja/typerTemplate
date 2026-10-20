@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Annotated, Any
 
 import typer
+from packaging.version import Version
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 app = typer.Typer(
@@ -32,7 +33,6 @@ IGNORED_PARTS = {
     ".ruff_cache",
     ".pytest_cache",
 }
-BASE_TEMPLATE_VERSION = "0.3.0.dev0"
 BASE_ANSWERS_SCHEMA = 1
 
 
@@ -40,7 +40,6 @@ class CompositionConfig(BaseModel):
     """Closed, versioned input schema; filesystem authorization remains separate."""
 
     model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
-    template_version: str = Field(alias="templateVersion", min_length=1)
     answers_schema: Annotated[int, Field(strict=True, gt=0)] = Field(
         alias="answersSchema"
     )
@@ -100,14 +99,32 @@ def load_config(repo: Path) -> dict[str, Any]:
         ) from None
 
 
+def template_version(repo: Path) -> str:
+    """Maintenance project metadata is the sole template version source."""
+    metadata = tomllib.loads((repo / "pyproject.toml").read_text())
+    return str(Version(metadata["project"]["version"]))
+
+
+def write_render_provenance(output: Path, version: str) -> None:
+    """Copier supplies its supported exact VCS hash and selected ref at render."""
+    content = (
+        '{\n  "templateVersion": ' + json.dumps(version) + ",\n"
+        '  "sourceCommit": {{ _copier_conf.vcs_ref_hash'
+        " | default(none, true) | tojson }},\n"
+        '  "sourceRef": {{ _copier_answers.get("_commit") | tojson }}\n}\n'
+    )
+    (output / ".template-version.json.jinja").write_text(content)
+
+
 def stamp_base(repo: Path) -> str:
     """Stamp the direct Python Copier source without hashing the stamp itself."""
     files = {
         f"template/{name}": path
         for name, path in source_files(repo / "template").items()
-        if name != ".template-source.json"
+        if name not in {".template-source.json", ".template-version.json.jinja"}
     }
     files["copier.yml"] = repo / "copier.yml"
+    files["pyproject.toml"] = repo / "pyproject.toml"
     files["tools/compose_template.py"] = repo / "tools/compose_template.py"
     shared_tests = repo / "tools/test_composition.py"
     if shared_tests.is_file():
@@ -117,7 +134,7 @@ def stamp_base(repo: Path) -> str:
         json.dumps(
             {
                 "sourceContentSha256": identity,
-                "templateVersion": BASE_TEMPLATE_VERSION,
+                "templateVersion": template_version(repo),
                 "answersSchema": BASE_ANSWERS_SCHEMA,
                 "publication": (
                     "local worktree; release status must be checked separately"
@@ -128,6 +145,7 @@ def stamp_base(repo: Path) -> str:
         )
         + "\n"
     )
+    write_render_provenance(repo / "template", template_version(repo))
     return identity
 
 
@@ -241,7 +259,7 @@ def refresh_snapshot(repo: Path, base: Path, snapshot: Path) -> None:
 
 def assemble(repo: Path, config: dict[str, Any]) -> dict[str, Any]:
     validated = CompositionConfig.model_validate(config)
-    template_version = validated.template_version
+    version = template_version(repo)
     answers_schema = validated.answers_schema
     snapshot = repo / config["snapshot"]
     for name in ("compose_template.py", "test_composition.py"):
@@ -317,13 +335,13 @@ def assemble(repo: Path, config: dict[str, Any]) -> dict[str, Any]:
             (repo / "copier.yml").read_bytes()
         ).hexdigest()
         source_identity = hashlib.sha256(
-            f"{snapshot_identity}:{overlay_identity}:{config_identity}:{copier_config_identity}".encode()
+            f"{snapshot_identity}:{overlay_identity}:{config_identity}:{copier_config_identity}:{version}".encode()
         ).hexdigest()
         (staging / ".template-source.json").write_text(
             json.dumps(
                 {
                     "sourceContentSha256": source_identity,
-                    "templateVersion": template_version,
+                    "templateVersion": version,
                     "answersSchema": answers_schema,
                     "parentContentSha256": snapshot_identity,
                     "overlayContentSha256": overlay_identity,
@@ -338,6 +356,7 @@ def assemble(repo: Path, config: dict[str, Any]) -> dict[str, Any]:
             )
             + "\n"
         )
+        write_render_provenance(staging, version)
         new_files = source_files(staging)
         previous_record_path = repo / "composition.lock.json"
         if output.exists() and previous_record_path.exists():
@@ -365,8 +384,9 @@ def assemble(repo: Path, config: dict[str, Any]) -> dict[str, Any]:
             {new: "retainedParent" for new in config.get("retainBase", {}).values()}
         )
         owners[".template-source.json"] = "compositor"
+        owners[".template-version.json.jinja"] = "compositor"
         record = {
-            "templateVersion": template_version,
+            "templateVersion": version,
             "answersSchema": answers_schema,
             "parentContentSha256": snapshot_identity,
             "overlayContentSha256": overlay_identity,
@@ -410,15 +430,127 @@ def smoke_copier(repo: Path, answers: dict[str, Any]) -> None:
         subprocess.run([*command, str(repo), str(destination)], check=True)
 
 
+def sync_engineering(repo: Path, target: Path, paths: list[str]) -> None:
+    """Update an explicit reviewed subset, preserving locally edited snapshots."""
+    allowed = {
+        name: "template/" + name
+        for name in (
+            "docker/quality.mk",
+            "docker/quality-python.mk",
+            "docker/coverage_report.py",
+            "docker/source_identity.sh",
+            "docker/release.py",
+        )
+    } | {
+        name: name
+        for name in (
+            "docker/documentation-requirements.in",
+            "docker/documentation-requirements.lock",
+        )
+    }
+    if not paths or len(set(paths)) != len(paths) or not set(paths) <= allowed.keys():
+        raise ValueError("Choose a unique explicit portable engineering subset")
+    manifest_path = target / ".github/engineering-source.json"
+    if manifest_path.is_symlink() or not manifest_path.resolve().is_relative_to(target):
+        raise ValueError("Engineering manifest escapes target")
+    if manifest_path.exists():
+        record = json.loads(manifest_path.read_text())
+        if record.get("repository") != "https://github.com/serrja/pythonTemplate":
+            raise ValueError("Engineering source owner differs")
+    else:
+        record = {"repository": "https://github.com/serrja/pythonTemplate", "files": {}}
+    replacements: dict[str, Path] = {}
+    for name in paths:
+        destination = target / name
+        source = repo / allowed[name]
+        if (
+            destination.is_symlink()
+            or not destination.resolve().is_relative_to(target)
+            or source.is_symlink()
+            or not source.is_file()
+        ):
+            raise ValueError("Unsafe portable engineering source/destination")
+        previous = record["files"].get(name)
+        if destination.exists() and not previous and source != destination:
+            pinned = record.get("revision")
+            if (
+                not isinstance(pinned, str)
+                or len(pinned) != 40
+                or any(c not in "0123456789abcdef" for c in pinned)
+            ):
+                raise ValueError("Existing unmanaged file has no trusted source pin")
+            old = subprocess.run(
+                ["git", "show", f"{pinned}:{allowed[name]}"],
+                cwd=repo,
+                capture_output=True,
+                check=False,
+            )
+            if old.returncode != 0 or old.stdout != destination.read_bytes():
+                raise ValueError("Existing unmanaged file differs from pinned owner")
+        if (
+            destination.exists()
+            and previous
+            and (
+                previous["source"] != allowed[name]
+                or hashlib.sha256(destination.read_bytes()).hexdigest()
+                != previous["sha256"]
+            )
+        ):
+            raise ValueError("Managed engineering file has unreviewed local edits")
+        replacements[name] = source
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    dirty = subprocess.run(
+        ["git", "status", "--porcelain=v1"],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    if target != repo and dirty:
+        raise ValueError("Publish a clean source commit before downstream propagation")
+    # Validate every path first. The retained manifest pins each file separately,
+    # because subset updates must not misattribute unselected historical snapshots.
+    for name, source in replacements.items():
+        destination = target / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if source != destination:
+            shutil.copy2(source, destination)
+        record["files"][name] = {
+            "source": allowed[name],
+            "sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+            "revision": None if target == repo else head,
+        }
+    if target == repo:
+        record["revision"] = None
+    else:
+        record.setdefault("revision", head)
+        record["latestUpdateRevision"] = head
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(json.dumps(record, indent=2) + "\n")
+
+
 @app.command(name="compose")
 def compose(
     repo: Annotated[Path, typer.Option("--repo")] = Path("."),
     refresh_base: Annotated[Path | None, typer.Option("--refresh-base")] = None,
     smoke: Annotated[bool, typer.Option("--smoke")] = False,
     stamp: Annotated[bool, typer.Option("--stamp-base")] = False,
+    sync_target: Annotated[Path | None, typer.Option("--sync-engineering")] = None,
+    managed_path: Annotated[list[str] | None, typer.Option("--managed-path")] = None,
 ) -> None:
     """Materialize or explicitly refresh the declared source composition."""
     repo = repo.resolve()
+    if sync_target is not None:
+        sync_engineering(repo, sync_target.resolve(), managed_path or [])
+        return
+    if managed_path:
+        raise typer.BadParameter("--managed-path requires --sync-engineering")
     if stamp:
         print(f"pythonTemplate={stamp_base(repo)}")
         return
