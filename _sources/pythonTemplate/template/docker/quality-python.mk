@@ -17,7 +17,7 @@ QUALITY_RUN_ARGS += $(if $(filter 1,$(OFFLINE)),--pull=never,)
 INSTALLED_TEST_IMAGE ?= $(QUALITY_IMAGE)-installed
 OFFLINE_PREFLIGHT_COMMAND ?= $(MAKE) python-offline-preflight
 ifeq ($(OFFLINE),1)
-BUILD_COMMAND ?= $(QUALITY_RUN) python docker/release.py release-check
+BUILD_COMMAND ?= $(RELEASE_CHECK_COMMAND)
 endif
 RENDER_OUTPUT ?= $(CURDIR)/.local/rendered
 RENDER_ARGS ?=
@@ -28,7 +28,7 @@ python-offline-preflight:
 	@test -s "$(REPORT_DIR)/installed/test-image-id.txt" -a -s "$(REPORT_DIR)/installed/source.json" || { echo "BLOCKED: prepare installed acceptance online first." >&2; exit 2; }
 	@test "$$(cat $(REPORT_DIR)/installed/test-image-id.txt)" = "$$($(DOCKER) image inspect $(INSTALLED_TEST_IMAGE) --format '{{.Id}}')" || { echo "BLOCKED: prepared installed image missing or replaced." >&2; exit 2; }
 	@test "$$(sed -n 's/.*"contentSha256":"\([a-f0-9]*\)".*/\1/p' $(REPORT_DIR)/source.json)" = "$$(sed -n 's/.*"contentSha256":"\([a-f0-9]*\)".*/\1/p' $(REPORT_DIR)/installed/source.json)" || { echo "BLOCKED: installed acceptance source changed." >&2; exit 2; }
-	$(QUALITY_RUN) python docker/release.py release-check
+	$(RELEASE_CHECK_COMMAND)
 render: QUALITY_RUN_ARGS += --mount "type=bind,source=$(RENDER_OUTPUT),target=/render"
 render: quality-image
 	@mkdir -p "$(RENDER_OUTPUT)"
