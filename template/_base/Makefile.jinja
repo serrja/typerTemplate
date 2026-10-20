@@ -1,5 +1,7 @@
 ifneq ($(CONTAINERIZED),1)
 {% block dockerSettings %}QUALITY_IMAGE := {{ packageName }}:quality
+# Generated check owns its complete graph; opt into extras only when defined.
+QUALITY_EXTRA_TARGETS :=
 BUILD_DOCKERFILE := Dockerfile.quality{% endblock %}
 include docker/quality-python.mk
 else
