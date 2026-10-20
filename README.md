@@ -72,9 +72,9 @@ owns engineering choices; this repository owns only the CLI specialization.
 
 ## 🔒 Access and use
 
-This source repository is private. No license or public release has been selected.
-The maintained commands and test fixtures are available to authorized readers;
-publication and redistribution terms require a separate owner decision.
+This source repository is private and has no public release. The maintained
+commands and test fixtures are available to authorized readers; the source license
+is described below.
 
 ## 📄 License
 
