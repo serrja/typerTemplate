@@ -2,10 +2,11 @@
 
 Notable source and tooling changes are recorded below.
 
-## Unreleased
+## 0.1.0.dev2
 
+Inherit source-bound offline artifact/image preflight and fresh installed acceptance.
 Point README version references at canonical metadata and the shared release guide.
-The published template tags, generated files and compatibility are unchanged.
+The published dev1 tag and generated application runtime contracts are unchanged.
 
 ## 0.1.0.dev1
 

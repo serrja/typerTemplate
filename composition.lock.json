@@ -15,8 +15,8 @@
     ".github/workflows/release.yml.jinja": "fce9e0563e8414bae7371391ab24da296bebdeb2d2701185451238e2f32a141c",
     ".gitignore": "732f5ce68b4b13ef900931ca4a47ef00acffa7cdb7b699feb0e8a8d7ac719d82",
     ".pre-commit-config.yaml": "ce876c91a3925b76317a9875c15d344f78e3be9936662ac8b0c64f224f6f98da",
-    ".template-source.json": "57f5c036df2f74c29add8d89ca1875647fd507451755da5da426a7365785fbe8",
-    ".template-version.json.jinja": "56e491eba5983468f0984eb6366e4a7f5278c764282adb312f0bcfd2fda6031f",
+    ".template-source.json": "04689053a3493279be86e035ae58b5f3e3c1d88c3842fec44bc584b72292759d",
+    ".template-version.json.jinja": "22e838c4c2751a728fbcaf4aa7ed20850da5a2db866e1a5a82febefb1472c305",
     "AGENTS.md.jinja": "c22b27fcab3d4a887f8adbf26cd6b9c45c2d17fcc7ab1cd174573bc9e465091e",
     "CONTRIBUTING.md.jinja": "5ae3b7d2871613bf4dc676c32a76de330774f7a0014d19964d1bcb56c8844f7f",
     "Dockerfile.quality": "a118e9448e6525d59be09dbd8c69ab141fd207ebfd711d77bf86d60b9fdd3763",
@@ -32,7 +32,7 @@
     "_meta/license-questions.yml": "9787a062df8c50f35bec50174c9c53cf577a45b3f0c57634e67ec7fed9586b75",
     "_meta/python-name-validator.jinja": "3c133a5ee45c6dce35579e0d8ef7b0f0b61eba608535173530c5c4aff8da1128",
     "docker/coverage_report.py": "75c5b398842ae3199da118ef5c15ce9616c3b6de921de98056bdcb1744e4c85e",
-    "docker/quality-python.mk": "7a035479394a82b085e67f986a237c964e085022594678d2bba490529e18d655",
+    "docker/quality-python.mk": "328c770490d19b1c4c769557bb5f74b9a2a9eba305d97af6fff70e27f366013f",
     "docker/quality.mk": "31f2a873741ca440de1d021e7c767dc0069c56c62ce6b859b944cc437ce098c1",
     "docker/release.py": "345b82b5036b8ac162778ba69af20cf1d45e2ccc28038a168f2b6882de9587a3",
     "docker/source_identity.sh": "efe087bf133fc2c4c9a02ee4a3935e77d4a39ded3b14387c3dde0d90ef25ecc7",
@@ -95,8 +95,8 @@
     "tests/foundation/test_cli.py.jinja": "overlay",
     "tests/foundation/test_package.py.jinja": "parent"
   },
-  "parentContentSha256": "67ca6f18c0ebc4d1833da1367c9d561443649b893aebae0d4081a8b6aec51870",
+  "parentContentSha256": "d5af67b9e03a8608da08d932401d55246537635f329c61b2eb1a7167d5e9a7a1",
   "schema": 1,
-  "sourceContentSha256": "d740b203d153e12acfa8c22e9477c0919adf203c26c7a4302d77555dc8b43b7c",
-  "templateVersion": "0.1.0.dev1"
+  "sourceContentSha256": "3501b2fb6272d2219aef1d340d5374d51bb0f8d90c4f01012de23a6c2f5d3a6c",
+  "templateVersion": "0.1.0.dev2"
 }

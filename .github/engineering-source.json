@@ -21,8 +21,8 @@
     },
     "docker/quality-python.mk": {
       "source": "template/docker/quality-python.mk",
-      "sha256": "7a035479394a82b085e67f986a237c964e085022594678d2bba490529e18d655",
-      "revision": "1aaab606373980a6084ae1a69069280241fb27de"
+      "sha256": "328c770490d19b1c4c769557bb5f74b9a2a9eba305d97af6fff70e27f366013f",
+      "revision": "d868aeffe468a700a396c52c3b00b00b11946157"
     },
     "docker/coverage_report.py": {
       "source": "template/docker/coverage_report.py",
@@ -76,5 +76,5 @@
   },
   "codeowners": "Project-specific assignment; not inherited from the template.",
   "role": "Reviewed base-owned engineering snapshots; CLI source belongs only to overlay/.",
-  "latestUpdateRevision": "b95e247bc59123decdb02e4db6d98fa761b69786"
+  "latestUpdateRevision": "d868aeffe468a700a396c52c3b00b00b11946157"
 }
