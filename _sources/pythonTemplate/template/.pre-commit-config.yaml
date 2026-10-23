@@ -3,11 +3,11 @@ repos:
     hooks:
       - id: ruff-check
         name: Ruff check
-        entry: uv run --locked ruff check .
+        entry: uvx --from ruff==0.16.4 ruff check .
         language: system
         pass_filenames: false
       - id: ruff-format
         name: Ruff format check
-        entry: uv run --locked ruff format --check .
+        entry: uvx --from ruff==0.16.4 ruff format --check .
         language: system
         pass_filenames: false

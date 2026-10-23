@@ -1,6 +1,6 @@
 [project]
 name = "typer-template-maintenance"
-version = "0.1.0.dev2"
+version = "0.1.0.dev3"
 license = "MIT"
 license-files = ["LICENSE", "LICENSES/*", "THIRD_PARTY_NOTICES.md"]
 requires-python = ">=3.12"

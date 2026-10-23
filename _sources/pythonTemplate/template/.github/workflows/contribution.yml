@@ -17,7 +17,7 @@ jobs:
         run: |
           set -euo pipefail
           types='(feat|fix|test|refactor|docs|build|ci|chore|perf|style|revert)'
-          [[ ( -n "$LEGACY_BRANCH" && "$HEAD_REF" == "$LEGACY_BRANCH" ) || "$HEAD_REF" =~ ^$types/[a-z][A-Za-z0-9]*$ ]]
+          [[ "$HEAD_REF" == dev || "$HEAD_REF" == test || ( -n "$LEGACY_BRANCH" && "$HEAD_REF" == "$LEGACY_BRANCH" ) || "$HEAD_REF" =~ ^$types/[a-z][A-Za-z0-9]*$ ]]
           [[ "$PR_TITLE" != *$'\n'* && "$PR_TITLE" != *$'\r'* ]]
           pattern="^$types\\([a-z][a-z0-9-]*\\)!?: .+$"
           [[ "$PR_TITLE" =~ $pattern ]]

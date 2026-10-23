@@ -1,8 +1,19 @@
+ifeq ($(CONTAINERIZED),1)
+RUFF ?= ruff
+else
+RUFF ?= uvx --from ruff==0.16.4 ruff
+endif
+# Quick dev commands never prepare a product/build image.
+ifneq ($(filter lint format format-check check,$(MAKECMDGOALS)),)
+override CONTAINERIZED := 1
+endif
 ifneq ($(CONTAINERIZED),1)
 {% block dockerSettings %}QUALITY_IMAGE := {{ packageName }}:quality
 # Generated check owns its complete graph; opt into extras only when defined.
 QUALITY_EXTRA_TARGETS :=
 BUILD_DOCKERFILE := Dockerfile.quality{% endblock %}
+QUALITY_EXTRA_TARGETS += acceptance
+CI_LOCAL_TARGETS ?= acceptance coverage build verify release-check
 include docker/quality-python.mk
 else
 .DEFAULT_GOAL := help
@@ -17,12 +28,12 @@ install: ## Install the locked development environment.
 	$(UV) sync --locked
 
 format: ## Format owned Python sources.
-	$(UV) run --locked ruff check --fix .
-	$(UV) run --locked ruff format .
+	$(RUFF) check --fix .
+	$(RUFF) format .
 
 lint: ## Check formatting and lint without modifying files.
-	$(UV) run --locked ruff check .
-	$(UV) run --locked ruff format --check .
+	$(RUFF) check .
+	$(RUFF) format --check .
 
 typecheck: ## Check strict Python types.
 	$(UV) run --locked mypy
@@ -36,7 +47,9 @@ typecheck: ## Check strict Python types.
 {% block fullTestTarget %}test: test-unit ## Run every test required by this project's capabilities.
 {% endblock %}
 
-check: lint typecheck{% if withTesting | default(true) %} test{% endif %} ## Run the mandatory non-mutating checks.
+check: lint ## Fast lint-only gate; no tests/build.
+
+acceptance: lint typecheck{% if withTesting | default(true) %} test{% endif %} ## Run the mandatory non-mutating checks.
 	$(UV) lock --check
 
 {% block buildCommand %}build: ## Build the wheel and source distribution.
@@ -47,3 +60,10 @@ check: lint typecheck{% if withTesting | default(true) %} test{% endif %} ## Run
 -include Makefile.local
 
 endif
+
+.PHONY: dev-policy-help
+help: dev-policy-help
+dev-policy-help:
+	@printf '%s\n' 'Daily: make lint; explicit git push origin dev.' \
+	  'Manual only: test, typecheck, coverage, build, acceptance, ci-local.' \
+	  'Native lint tools must be installed; lint never syncs/builds the application.'
