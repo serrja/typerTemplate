@@ -10,9 +10,40 @@ import tarfile
 from pathlib import Path
 
 import pytest
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 COPIER = [sys.executable, "-m", "copier"]
+
+
+@pytest.mark.parametrize("rendered", [False, True])
+def test_ci_checks_every_permanent_branch_event(tmp_path: Path, rendered: bool) -> None:
+    root = ROOT
+    if rendered:
+        source, revision = _source(tmp_path)
+        root = tmp_path / "application"
+        _run(
+            *COPIER,
+            "copy",
+            "--quiet",
+            "--defaults",
+            f"--vcs-ref={revision}",
+            str(source),
+            str(root),
+            "-d",
+            "projectName=sampleCli",
+            "-d",
+            "withCi=true",
+        )
+    workflow = yaml.load(
+        (root / ".github/workflows/ci.yml").read_text(), Loader=yaml.BaseLoader
+    )
+    assert workflow["on"]["push"] == {"branches": ["test", "dev", "main"]}
+    assert workflow["on"]["pull_request"] == {"branches": ["test", "dev", "main"]}
+    assert workflow["concurrency"]["cancel-in-progress"] == (
+        "${{ github.event_name == 'pull_request' }}"
+    )
+    assert "github.run_id" in workflow["concurrency"]["group"]
 
 
 @pytest.mark.parametrize("profile", ["cli"])

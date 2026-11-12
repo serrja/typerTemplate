@@ -45,6 +45,7 @@ Keep its CLI contract test in a project-owned test module:
 from typer.testing import CliRunner
 from notescli.cli import app
 
+
 def test_hello():
     result = CliRunner().invoke(app, ["hello", "Ada"])
     assert result.exit_code == 0

@@ -1,6 +1,7 @@
 name: Contribution
 on:
   pull_request:
+    branches: [test, dev, main]
     types: [opened, synchronize, reopened, edited]
 permissions:
   contents: read
@@ -12,12 +13,24 @@ jobs:
       - name: Check naming without executing or checking out PR code
         env:
           HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.event.pull_request.base.repo.full_name }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           LEGACY_BRANCH: ${{ vars.LEGACY_PUBLISHED_BRANCH }}
         run: |
           set -euo pipefail
           types='(feat|fix|test|refactor|docs|build|ci|chore|perf|style|revert)'
-          [[ ( -n "$LEGACY_BRANCH" && "$HEAD_REF" == "$LEGACY_BRANCH" ) || "$HEAD_REF" =~ ^$types/[a-z][A-Za-z0-9]*$ ]]
+          [[ "$BASE_REPO" == "$GITHUB_REPOSITORY" ]]
+          case "$BASE_REF" in
+            test)
+              [[ ! "$HEAD_REF" =~ ^(test|dev|main)$ ]]
+              [[ ( -n "$LEGACY_BRANCH" && "$HEAD_REF" == "$LEGACY_BRANCH" ) || "$HEAD_REF" =~ ^[a-z][A-Za-z0-9]*$ ]]
+              ;;
+            dev) [[ "$HEAD_REF" == test && "$HEAD_REPO" == "$GITHUB_REPOSITORY" ]] ;;
+            main) [[ "$HEAD_REF" == dev && "$HEAD_REPO" == "$GITHUB_REPOSITORY" ]] ;;
+            *) exit 1 ;;
+          esac
           [[ "$PR_TITLE" != *$'\n'* && "$PR_TITLE" != *$'\r'* ]]
           pattern="^$types\\([a-z][a-z0-9-]*\\)!?: .+$"
           [[ "$PR_TITLE" =~ $pattern ]]
