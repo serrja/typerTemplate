@@ -1,6 +1,6 @@
 # typerTemplate
 
-Private Copier specialization for Python CLI applications, composed from the
+Copier specialization for Python CLI applications, composed from the
 pinned pythonTemplate source through the existing composition tool. It owns CLI
 wiring, lazy Pydantic Settings and pytest/CliRunner examples. It adds no HTTP or
 Pokerlost contracts and no runtime dependency on another checkout.
@@ -74,9 +74,10 @@ owns engineering choices; this repository owns only the CLI specialization.
 
 ## 🔒 Access and use
 
-This source repository is private and has no public release. The maintained
-commands and test fixtures are available to authorized readers; the source license
-is described below.
+This source repository is public. Use a reviewed immutable source revision; public
+source access does not establish package publication or release readiness. The
+documented SSH Copier URL requires normal GitHub SSH authentication. The source
+license is described below.
 
 ## 📄 License
 
