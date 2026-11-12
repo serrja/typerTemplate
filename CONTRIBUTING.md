@@ -16,9 +16,9 @@ uv run --locked pytest -q
 uv run --locked python tools/check_documentation.py --documents README.md CONTRIBUTING.md AGENTS.md
 ```
 
-`make check` currently provides lint only. The explicit native commands above also
-check formatting, typing, real render/update behavior and documentation. The full
-Docker acceptance remains `make ci-local`; source checks do not replace it.
+`make check` runs the maintenance lint/format checks, strict typing, pytest and
+lock check through the Docker toolchain. The explicit native commands above also
+check documentation. Full artifact acceptance remains `make ci-local`.
 
 Render a disposable CLI with `make render
 RENDER_OUTPUT=../review-cli RENDER_ARGS='-d projectName=reviewCli'`.
