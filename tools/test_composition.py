@@ -451,11 +451,14 @@ def test_repository_source_collision_is_rejected(
         composer.assemble(root, config)
 
 
+@pytest.mark.parametrize(
+    "managed_path", ["docker/quality.mk", ".github/workflows/contribution.yml"]
+)
 def test_engineering_subset_adoption_and_local_edit_protection(
-    tmp_path: Path,
+    tmp_path: Path, managed_path: str
 ) -> None:
     root = tmp_path / "owner"
-    write(root / "template/docker/quality.mk", "first\n")
+    write(root / "template" / managed_path, "first\n")
     write(root / "template/docker/source_identity.sh", "source\n")
     git(root, "init", "--quiet")
     git(root, "add", ".")
@@ -472,20 +475,22 @@ def test_engineering_subset_adoption_and_local_edit_protection(
     )
     target = tmp_path / "consumer"
     target.mkdir()
-    composer.sync_engineering(root, target, ["docker/quality.mk"])
+    composer.sync_engineering(root, target, [managed_path])
     record = json.loads((target / ".github/engineering-source.json").read_text())
-    assert record["files"]["docker/quality.mk"]["revision"] == git(
-        root, "rev-parse", "HEAD"
-    )
-    write(target / "docker/quality.mk", "owner edit\n")
+    assert record["files"][managed_path] == {
+        "source": "template/" + managed_path,
+        "revision": git(root, "rev-parse", "HEAD"),
+        "sha256": hashlib.sha256(b"first\n").hexdigest(),
+    }
+    write(target / managed_path, "owner edit\n")
     with pytest.raises(ValueError, match="unreviewed local edits"):
         composer.sync_engineering(
-            root, target, ["docker/source_identity.sh", "docker/quality.mk"]
+            root, target, ["docker/source_identity.sh", managed_path]
         )
     assert not (target / "docker/source_identity.sh").exists()
-    assert (target / "docker/quality.mk").read_text() == "owner edit\n"
+    assert (target / managed_path).read_text() == "owner edit\n"
     with pytest.raises(ValueError, match="explicit portable"):
         composer.sync_engineering(root, target, ["../outside"])
-    write(root / "template/docker/quality.mk", "uncommitted\n")
+    write(root / "template" / managed_path, "uncommitted\n")
     with pytest.raises(ValueError, match="clean source commit"):
         composer.sync_engineering(root, target, ["docker/source_identity.sh"])

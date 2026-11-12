@@ -1,13 +1,14 @@
 name: CI
 on:
   push:
-    branches: [main]
+    branches: [test, dev, main]
   pull_request:
+    branches: [test, dev, main]
 permissions:
   contents: read
 concurrency:
-  group: ci-{% raw %}${{ github.workflow }}{% endraw %}-{% raw %}${{ github.ref }}{% endraw %}
-  cancel-in-progress: true
+  group: ci-{% raw %}${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}{% endraw %}
+  cancel-in-progress: {% raw %}${{ github.event_name == 'pull_request' }}{% endraw %}
 jobs:
   source:
     runs-on: ubuntu-24.04
