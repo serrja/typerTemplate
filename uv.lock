@@ -971,7 +971,7 @@ wheels = [
 
 [[package]]
 name = "typer-template-maintenance"
-version = "0.1.0.dev2"
+version = "0.1.0.dev3"
 source = { virtual = "." }
 
 [package.dev-dependencies]

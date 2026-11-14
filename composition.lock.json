@@ -15,9 +15,9 @@
     ".github/workflows/release.yml.jinja": "fce9e0563e8414bae7371391ab24da296bebdeb2d2701185451238e2f32a141c",
     ".gitignore": "732f5ce68b4b13ef900931ca4a47ef00acffa7cdb7b699feb0e8a8d7ac719d82",
     ".pre-commit-config.yaml": "ce876c91a3925b76317a9875c15d344f78e3be9936662ac8b0c64f224f6f98da",
-    ".template-source.json": "f0859fa226201b58f3d05a4986193398d850ae3ed1d70aa6457641d12bb1814e",
-    ".template-version.json.jinja": "22e838c4c2751a728fbcaf4aa7ed20850da5a2db866e1a5a82febefb1472c305",
-    "AGENTS.md.jinja": "c22b27fcab3d4a887f8adbf26cd6b9c45c2d17fcc7ab1cd174573bc9e465091e",
+    ".template-source.json": "b5a375f9478d27d02a3474599c3c53f5d55304dd694d5bf8901c7f47b9e1b1ff",
+    ".template-version.json.jinja": "373fde8f005d8a97f03244ab262c941c399e0ad200711d3c2610d57bd31bc653",
+    "AGENTS.md.jinja": "612d984710ee6949736d92db3e6badcdf0e532f9a036c28741ccd21fbe38b799",
     "CONTRIBUTING.md.jinja": "1a1e190d3d445d5288be10972911d6494b6184a0cf3192656dfbf7a21ea06007",
     "Dockerfile.quality": "a118e9448e6525d59be09dbd8c69ab141fd207ebfd711d77bf86d60b9fdd3763",
     "Dockerfile.quality.dockerignore": "b33c067b012b6ac670c6876493bb0ab63f68e4fb7c0722c35197e0e9161897d5",
@@ -95,8 +95,8 @@
     "tests/foundation/test_cli.py.jinja": "overlay",
     "tests/foundation/test_package.py.jinja": "parent"
   },
-  "parentContentSha256": "e260c2588744ea8ba1a6fba45e246585ff138fe93b9aceb80c363a2a5b37b2cf",
+  "parentContentSha256": "f684540180dce2d08def69579a6ba490f3973138e1dc8b5bbc22f5cd645a0c80",
   "schema": 1,
-  "sourceContentSha256": "98c6c8d6f9d46368c45d20101292417e696bf6340d6fecce5feec7a48cd71d29",
-  "templateVersion": "0.1.0.dev2"
+  "sourceContentSha256": "909be9c9d8ecc0f0ab2093642d7ea5e8b3dc03a5178418cd41a191ac6df56c61",
+  "templateVersion": "0.1.0.dev3"
 }
