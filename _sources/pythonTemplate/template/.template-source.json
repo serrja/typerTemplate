@@ -1,6 +1,6 @@
 {
   "answersSchema": 1,
   "publication": "local worktree; release status must be checked separately",
-  "sourceContentSha256": "11c4ca6d22fad5aa879a0cd559e58e2b416114764ffe656ed7b11226d07cbf91",
-  "templateVersion": "0.3.0.dev2"
+  "sourceContentSha256": "2e24ef1d90941ec108a14096786b724bbd5a155cab7057665ffd69fe80bab543",
+  "templateVersion": "0.3.0.dev3"
 }
