@@ -441,6 +441,7 @@ def sync_engineering(repo: Path, target: Path, paths: list[str]) -> None:
             "docker/coverage_report.py",
             "docker/source_identity.sh",
             "docker/release.py",
+            "docker/python_release.py",
         )
     } | {
         name: name

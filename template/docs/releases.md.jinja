@@ -12,6 +12,18 @@ GitHub Release. Automated publication requires a reviewed shared provider and a
 compatible native Python build adapter; it is not configured by this template.
 CI checks alone do not establish that a release was published.
 
+`docker/python_release.py` supplies an unprivileged native H02 build/receipt
+adapter for a reviewed caller of the [pinned Python contract](https://github.com/pokerlost/.github/blob/e5cac33af228224af9deaef308e39c1b9f788033/docs/python_release_contract.md).
+It exports clean exact HEAD outside the checkout, injects the allocated static
+version with `uv version --frozen --offline`, and builds wheel/sdist offline using
+the locked interpreter and its already installed declared backend. The original
+pyproject and lock remain unchanged. Run `build --help` and `receipt --help` for
+required paths and identities. Pass the pinned provider verifier's ordered JSON
+metadata to `receipt` before attestation/upload. This helper does not configure a
+release workflow, allocate versions or publish. Dynamic versions and in-tree
+backends are unsupported. Compiled builds require their actual reviewed wheel
+tags rather than a pure-Python tag.
+
 Before promotion, review the full diff, checks and ancestry of working branch →
 `test` → `dev` → `main`. Permanent source branches must survive promotion. A
 missing or billing-blocked mandatory hosted check blocks merge and publication.

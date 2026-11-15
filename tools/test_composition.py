@@ -452,7 +452,12 @@ def test_repository_source_collision_is_rejected(
 
 
 @pytest.mark.parametrize(
-    "managed_path", ["docker/quality.mk", ".github/workflows/contribution.yml"]
+    "managed_path",
+    [
+        "docker/quality.mk",
+        ".github/workflows/contribution.yml",
+        "docker/python_release.py",
+    ],
 )
 def test_engineering_subset_adoption_and_local_edit_protection(
     tmp_path: Path, managed_path: str
