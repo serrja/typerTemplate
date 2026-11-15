@@ -435,11 +435,13 @@ def sync_engineering(repo: Path, target: Path, paths: list[str]) -> None:
     allowed = {
         name: "template/" + name
         for name in (
+            ".github/workflows/contribution.yml",
             "docker/quality.mk",
             "docker/quality-python.mk",
             "docker/coverage_report.py",
             "docker/source_identity.sh",
             "docker/release.py",
+            "docker/python_release.py",
         )
     } | {
         name: name

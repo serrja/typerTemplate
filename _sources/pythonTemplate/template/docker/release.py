@@ -11,6 +11,7 @@ import platform
 import tarfile
 import tomllib
 import zipfile
+from contextlib import suppress
 from datetime import UTC, datetime
 from email.parser import BytesParser
 from enum import StrEnum
@@ -131,10 +132,8 @@ def save_receipt(value: Receipt) -> None:
 def tool_versions() -> dict[str, str]:
     tools = {"python": platform.python_version()}
     for name in ("uv", "typer", "pydantic", "packaging", "pytest", "ruff", "mypy"):
-        try:
+        with suppress(importlib.metadata.PackageNotFoundError):
             tools[name] = importlib.metadata.version(name)
-        except importlib.metadata.PackageNotFoundError:
-            pass
     image = REPORTS / "quality-image-id.txt"
     if image.is_file():
         tools["qualityImageId"] = image.read_text().strip()
@@ -390,14 +389,14 @@ def bundle_build(name: Annotated[str | None, typer.Option()] = None) -> None:
     with (
         target.open("wb") as raw,
         gzip.GzipFile(fileobj=raw, mode="wb", mtime=0, filename="") as zipped,
+        tarfile.open(fileobj=zipped, mode="w") as archive,
     ):
-        with tarfile.open(fileobj=zipped, mode="w") as archive:
-            for path in bundle_files():
-                info = tarfile.TarInfo(path.as_posix())
-                data = path.read_bytes()
-                info.size = len(data)
-                info.mode = 0o755 if path.stat().st_mode & 0o111 else 0o644
-                archive.addfile(info, io.BytesIO(data))
+        for path in bundle_files():
+            info = tarfile.TarInfo(path.as_posix())
+            data = path.read_bytes()
+            info.size = len(data)
+            info.mode = 0o755 if path.stat().st_mode & 0o111 else 0o644
+            archive.addfile(info, io.BytesIO(data))
     record_artifacts([target], version)
 
 
