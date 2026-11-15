@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib
+import json
 import os
+import re
+import sys
 import tomllib
 from importlib.metadata import distribution
 from pathlib import Path
 
-from packaging.utils import canonicalize_name
+from packaging.utils import canonicalize_name, parse_wheel_filename
+from packaging.version import Version
 
 
 def test_installed_distribution_and_public_import() -> None:
@@ -19,7 +24,46 @@ def test_installed_distribution_and_public_import() -> None:
     name = metadata["project"]["name"]
     installed = distribution(name)
     assert canonicalize_name(installed.metadata["Name"]) == canonicalize_name(name)
-    assert installed.version
+    assert Version(installed.version) == Version(metadata["project"]["version"])
     assert package.__name__ == "{{ packageName }}"
     if os.environ.get("TEST_INSTALLED_WHEEL") == "1":
-        assert "site-packages" in Path(package.__file__).resolve().parts
+        assert package.__file__ is not None
+        location = Path(package.__file__).resolve(strict=True)
+        assert "site-packages" in location.parts
+        raw_direct = installed.read_text("direct_url.json")
+        direct = json.loads(raw_direct) if raw_direct is not None else None
+        if direct is not None:
+            assert isinstance(direct, dict)
+            directory = direct.get("dir_info", {})
+            assert isinstance(directory, dict)
+            assert directory.get("editable", False) is False
+    if os.environ.get("TEST_EXACT_WHEEL") == "1":
+        assert os.environ.get("TEST_INSTALLED_WHEEL") == "1"
+        expected_path = os.environ.get("EXPECTED_WHEEL_PATH")
+        expected_hash = os.environ.get("EXPECTED_WHEEL_SHA256")
+        assert expected_path and expected_hash
+        assert re.fullmatch(r"[a-f0-9]{64}", expected_hash)
+        wheel = Path(expected_path)
+        assert wheel.is_file() and not wheel.is_symlink()
+        wheel = wheel.resolve(strict=True)
+        with wheel.open("rb") as stream:
+            assert hashlib.file_digest(stream, "sha256").hexdigest() == expected_hash
+        wheel_name, wheel_version, _, _ = parse_wheel_filename(wheel.name)
+        assert wheel_name == canonicalize_name(name)
+        assert wheel_version == Version(installed.version)
+        assert isinstance(direct, dict)
+        assert direct["url"] == wheel.as_uri()
+        assert "dir_info" not in direct and "vcs_info" not in direct
+        archive = direct.get("archive_info")
+        assert isinstance(archive, dict)
+        hashes = archive.get("hashes", {})
+        assert isinstance(hashes, dict)
+        assert hashes.keys() <= {"sha256"}
+        if "sha256" in hashes:
+            assert hashes["sha256"] == expected_hash
+        legacy_hash = archive.get("hash")
+        if legacy_hash is not None:
+            assert legacy_hash == "sha256=" + expected_hash
+        assert location.is_relative_to(Path(sys.prefix).resolve())
+        root = Path(__file__).resolve().parents[2]
+        assert not location.is_relative_to(root)

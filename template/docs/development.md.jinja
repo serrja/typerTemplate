@@ -8,6 +8,23 @@ reports those results without rerunning them. `make build` creates distributions
 and source-bound artifact evidence. Installed acceptance and source tests are
 different scenarios.
 
+The managed package test compares the installed native distribution version with
+`pyproject.toml` using `packaging.version.Version`. `TEST_INSTALLED_WHEEL=1` checks
+an import from site-packages and rejects editable origin metadata when present;
+it keeps the existing Docker contract without requiring artifact-path variables.
+For exact artifact acceptance, additionally set `TEST_EXACT_WHEEL=1`,
+`EXPECTED_WHEEL_PATH` to the actual wheel file and `EXPECTED_WHEEL_SHA256` to its
+lowercase SHA-256. The strict mode requires that file's hash, package/version,
+noneditable PEP 610 file URL and the active environment's installed import to
+agree. Declared optional PEP 610 SHA-256 hashes must match; uv may omit them.
+Strict mode rejects malformed or unsupported declared archive hashes.
+Run this acceptance outside the source checkout without import-path overrides.
+An allocated release uses the staged build's versioned pyproject in its isolated
+acceptance fixture; it does not rewrite the original source metadata or compare
+an application/OpenAPI version field.
+The portable `docker/python_release.py` retains its canonical Python 3.12 Ruff
+target through a per-file setting; project-owned code keeps the project's target.
+
 Ignored `coverage/` contains source SHA/dirty/content identity, commands, statuses,
 tool versions, coverage/JUnit and artifact checksums. Coverage below 100% warns;
 failed or unavailable mandatory checks do not become PASS. `OFFLINE=1` requires

@@ -31,6 +31,9 @@ sdist.exclude = [".aws", ".aws/**", ".agents", ".agents/**", ".codex", ".codex/*
 target-version = "{{ ruffTarget | default('py312') }}"
 line-length = 88
 
+[tool.ruff.per-file-target-version]
+"docker/python_release.py" = "py312"
+
 [tool.ruff.lint]
 select = ["B", "E", "F", "I", "N", "RUF", "UP", "TID252"]
 
